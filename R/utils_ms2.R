@@ -61,9 +61,17 @@ ms2_abs_to_rel <- function(ms2_spectra, abs_cutoff = 0, rel_cutoff = 10) {
     int_new <- .abs_to_rel(int_old)
     
     # filter based on relative treshold
+    mz_new <- mz_new[int_new > rel_cutoff]
+    int_new <- int_new[int_new > rel_cutoff]
     
+    # update Spectrum2 object within Spectra
+    ms2_spectra[[i]]@mz <- mz_new
+    ms2_spectra[[i]]@intensity <- int_new
+    ms2_spectra[[i]]@peaksCount <- length(mz_new)
     
   }
+  
+  return(ms2_spectra)
   
 }
 
