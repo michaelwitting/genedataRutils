@@ -1,0 +1,49 @@
+---
+title: "Reading Data"
+author: "Michael Witting"
+date: "8 11 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading MS1 data
+
+```{r read data, echo=FALSE}
+# load required libraries
+library(genedataRutils)
+library(MSnbase)
+library(tidyverse)
+
+# files with MS1 data
+cluster_file <- system.file("extdata/TandemLC_pos/20191026_CelegansTandemLC_pos_Cluster.gda", package = "genedataRutils")
+
+# read MS1 data
+read_gda_file(cluster_file)
+```
+
+## Reading MS2 data
+
+```{r, echo=FALSE}
+mgf_folder <- system.file("extdata/TandemLC_pos/20191026_CelegansTandemLC_pos", package = "genedataRutils")
+mgf_files <- list.files(mgf_folder, pattern = ".mgf$", full.names = TRUE)
+
+ms2_spectra <- Spectra()
+
+for(mgf_file in mgf_files) {
+  
+  ms2_clipboard <- readAnnotatedMgfData(mgf_file)
+  
+  ms2_spectra <- append(ms2_spectra, ms2_clipboard)
+  
+}
+```
+
+## Adding MS1 IDs to MS2 data
+
+```{r}
+ms2_spectra_id <- ms2_add_id(ms2_spectra, cluster_row_anno)
+```
+

@@ -1,4 +1,7 @@
 # this function reads a .gda file and creates three data frames
+#'
+#' @import tidyverse
+#' @export
 read_gda_file <- function(path_to_file, prefix = "") {
   
   # create data frames for data
@@ -94,16 +97,38 @@ read_gda_file <- function(path_to_file, prefix = "") {
   }
   
   # correct the format of the columns
-  rowAnnoDf$m.z <- as.numeric(rowAnnoDf$`m/z`)
-  rowAnnoDf$RT <- as.numeric(rowAnnoDf$RT)
-  rowAnnoDf$`RT Min` <- as.numeric(rowAnnoDf$`RT Min`)
-  rowAnnoDf$`RT Max` <- as.numeric(rowAnnoDf$`RT Max`)
-  rowAnnoDf$`m/z Min` <- as.numeric(rowAnnoDf$`m/z Min`)
-  rowAnnoDf$`m/z Max` <- as.numeric(rowAnnoDf$`m/z Max`)
+  # rowAnnoDf$m.z <- as.numeric(rowAnnoDf$`m/z`)
+  # rowAnnoDf$RT <- as.numeric(rowAnnoDf$RT)
+  # rowAnnoDf$`RT Min` <- as.numeric(rowAnnoDf$`RT Min`)
+  # rowAnnoDf$`RT Max` <- as.numeric(rowAnnoDf$`RT Max`)
+  # rowAnnoDf$`m/z Min` <- as.numeric(rowAnnoDf$`m/z Min`)
+  # rowAnnoDf$`m/z Max` <- as.numeric(rowAnnoDf$`m/z Max`)
+  rowAnnoDf <- type_convert(rowAnnoDf)
+  colAnnoDf <- type_convert(colAnnoDf)
+  dataDf <- type_convert(dataDf)
   
   
   # assign data frames
   assign(paste0(prefix, "ms_data"), dataDf, envir = parent.frame())
   assign(paste0(prefix, "col_anno"), colAnnoDf, envir = parent.frame())
   assign(paste0(prefix, "row_anno"), rowAnnoDf, envir = parent.frame())
+}
+
+write_gda_file <- function(col_anno, row_anno, ms_data, path_to_file, rowtype = "cluster") {
+  
+  # cbind row_anno and ms_data
+  
+  
+  # write header
+  # get number of annotations
+  # Namespace: Michael
+  # Rowtype: 2D PEAK
+  # Observable: Max. Intensity
+  # Row Annotations: 11
+  # Column Annotations: 2
+  # Transformation: LOG
+  # Version: 1
+  # Author: Michael Witting (michael.witting)
+  
+  
 }
