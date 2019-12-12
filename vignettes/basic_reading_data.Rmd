@@ -1,0 +1,85 @@
+---
+title: "Reading Data"
+author: "Michael Witting"
+date: "8 11 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Genedata Expressionist for MS allows to export results in different file formats. One of these formats is <code>.gda</code>. This format is read by the Analyst module in Genedata Expressionist for MS. Beside the actual peak data it contains metadata like annotations of samples are peaks. The package <code>genedataRutils</code> was developed to enable seamless reading of these files into R and allow further processing. This vignette describes the basic functions for reading of MS1 data in form of <code>.gda</code> files and MS2 data in form of <code>.mgf</code> files.
+
+## Loading the library
+
+The <code>genedataRutils</code> package is available from GitHub and can be directly installed from there using the <code>devtools::install_github()</code> function. Once installed the package can be loaded via <code>library()</code>. This vignette uses additionally functionalities from the <code>MSnbase</code> package for handling of MS2 data.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# load required libraries
+library(genedataRutils)
+library(MSnbase)
+```
+
+## Reading MS1 
+
+<code>.gda</code> files are read via the <code>read_gda_file()</code> function. A single file is read and three data frames are created. The first one is called <code>ms_data</code> and contains the actual intensties or areas that were exported. The two other data frames are called <code>col_anno</code> and <code>row_anno</code> and contain the annotations of the rows and the columns. All data frames are using the IDs of the peaks, cluster etc as row names. The data frames are assigned to the parent environment.
+The example below reads a short example distributed with the <code>genedataRutils</code> package.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# files with MS1 data
+cluster_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
+
+# read MS1 data
+read_gda_file(cluster_file)
+```
+
+If multiple <code>.gda</code> files shall be read the individual data frames would be overwritten. Therefore, the <code>read_gda_file</code> allows to define a prefix that is added to the name of the data frames.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# files with MS1 data
+cluster_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
+peak_file <- system.file("extdata/20191108_Pesticides_test_Peaks.gda", package = "genedataRutils")
+
+# read MS1 data
+read_gda_file(cluster_file, prefix = "cluster_")
+read_gda_file(peak_file, prefix = "peak_")
+
+# show first entries
+head(cluster_row_anno)
+head(peak_row_anno)
+```
+
+
+## Reading MS2 data
+
+MS2 data is exported from Genedata Expressionist for MS as <code>.mgf</code> file. These files can be read with the <code>readAnnotatedMgfData()</code>. This function returns a <code>Spectra()</code>, which organizes the individual spectra in a list with an additional metadata data frame. The function is contained in the <code>genedataRutils</code> and is based on the MGF reader from the <code>MSnbase</code> package. In contrast to the original function, the function from this package also parses additional data fields that are not standard <code>.mgf</code> fields. This is of great use especially if the data is processed and annotations are added to the metadata data frame. The colde below reads four example files contained in the <code>genedataRutils</code> package.
+
+```{r, echo=FALSE, warning=TRUE, message=FALSE}
+mgf_files <- list.files(system.file("extdata", package = "genedataRutils"),
+                        pattern = ".mgf$",
+                        full.names = TRUE)
+
+ms2_spectra <- Spectra()
+
+for(mgf_file in mgf_files) {
+  
+  ms2_clipboard <- readAnnotatedMgfData(mgf_file)
+  
+  ms2_spectra <- append(ms2_spectra, ms2_clipboard)
+  
+}
+```
+
+## Adding MS1 IDs to MS2 data
+
+In order to match the different MS levels the function <code>ms_add_id()</code> has been added. Based on a given <code>row_anno</code> data frame IDs of the MS1 peaks are added to the MS2 spectra.
+
+```{r}
+ms2_spectra_id <- ms2_add_id(ms2_spectra, cluster_row_anno)
+
+ms2_spectra_id
+```
+

@@ -1,0 +1,61 @@
+---
+title: "Reconstruct MS1 spectra"
+author: "Michael Witting"
+date: "22 11 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Cluster and Peak data
+
+```{r cars}
+# load required libraries
+library(genedataRutils)
+library(MSnbase)
+library(tidyverse)
+
+# files with MS1 data
+cluster_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
+peak_file <- system.file("extdata/20191108_Pesticides_test_Peaks.gda", package = "genedataRutils")
+
+# read MS1 data
+read_gda_file(cluster_file, prefix = "cluster_")
+read_gda_file(peak_file, prefix = "peak_")
+
+# show first entries
+head(cluster_row_anno)
+head(peak_row_anno)
+```
+
+## Reconstruct MS1 spectra
+
+TODO: Subset data to specific range for vignette
+
+```{r}
+# isolate only the cluster of Fluopicolide
+
+```
+
+
+```{r}
+# reconstruct MS1 spectra for Fluopicolide
+library(foreach)
+library(doParallel)
+
+# create cluster for parallel processing
+cl <- parallel::makeCluster(6)
+registerDoParallel(cl)
+
+ms1_spectra <- recon_iso_pattern(peak_row_anno, cluster_row_anno, peak_ms_data)
+
+stopCluster(cl)
+```
+
+```{r}
+comb_ms1_spec <- combineSpectra(ms1_spectra, fcol = "CLUSTER_ID", intensityFun = base::sum, mzd = 0.005)
+plot(comb_ms1_spec[[4]])
+```
+
