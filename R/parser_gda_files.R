@@ -1,6 +1,26 @@
 # this function reads a .gda file and creates three data frames
+#' @title Importing Genedata Expressionist for MS .gda files
+#' 
+#' Genedata Expressionist for MS can export obtained data in multiple file formats.
+#' One is the .gda format, which can be read by the Analyst module. This file
+#' contains the actual data (e.g. peak intensities, areas etc...) and additional
+#' annotations.
+#' This functions read directly a .gda file and creates three distinct data frames.
+#' One contains the actual MS data (ms_data), the other two the annotations of the columns
+#' and rows (row_anno and col_anno).
+#' 
+#' @param path_to_file File path to .gda file
+#' @param prefix Name prefix for the generated data frames. Should be used if multiple .gda files
+#' shall be read. The prefix is added before each data frame name, e.g. prefix = "cluster" generates
+#' cluster_ms_data as name of data frame variable instead of ms_data. Data frame are automatically assigned
+#' to the current working environment.
+#' 
+#' @examples 
+#' file <- system.file('')
+#' read_gda_file(file, prefix = 'pesticide')
 #'
-#' @import tidyverse
+#' @import stringr
+#'
 #' @export
 read_gda_file <- function(path_to_file, prefix = "") {
   
@@ -14,7 +34,7 @@ read_gda_file <- function(path_to_file, prefix = "") {
   
   while (TRUE) {
     line <- readLines(con, n = 1)
-    
+
     # exit loop
     if (length(line) == 0) {
       break
@@ -89,7 +109,6 @@ read_gda_file <- function(path_to_file, prefix = "") {
   # adjust data type
   for (name in colnames(colAnnoDf)) {
     if (grepl("\\[N|n\\]", name)) {
-      print(name)
       colAnnoDf[name] <- as.numeric(unlist(colAnnoDf[name]))
     } else if (grepl("\\[C|c\\]", name)) {
       colAnnoDf[name] <- as.factor(unlist(colAnnoDf[name]))
@@ -103,32 +122,12 @@ read_gda_file <- function(path_to_file, prefix = "") {
   # rowAnnoDf$`RT Max` <- as.numeric(rowAnnoDf$`RT Max`)
   # rowAnnoDf$`m/z Min` <- as.numeric(rowAnnoDf$`m/z Min`)
   # rowAnnoDf$`m/z Max` <- as.numeric(rowAnnoDf$`m/z Max`)
-  rowAnnoDf <- type_convert(rowAnnoDf)
-  colAnnoDf <- type_convert(colAnnoDf)
-  dataDf <- type_convert(dataDf)
-  
+  rowAnnoDf <- type.convert(rowAnnoDf)
+  colAnnoDf <- type.convert(colAnnoDf)
+  dataDf <- type.convert(dataDf)
   
   # assign data frames
   assign(paste0(prefix, "ms_data"), dataDf, envir = parent.frame())
   assign(paste0(prefix, "col_anno"), colAnnoDf, envir = parent.frame())
   assign(paste0(prefix, "row_anno"), rowAnnoDf, envir = parent.frame())
-}
-
-write_gda_file <- function(col_anno, row_anno, ms_data, path_to_file, rowtype = "cluster") {
-  
-  # cbind row_anno and ms_data
-  
-  
-  # write header
-  # get number of annotations
-  # Namespace: Michael
-  # Rowtype: 2D PEAK
-  # Observable: Max. Intensity
-  # Row Annotations: 11
-  # Column Annotations: 2
-  # Transformation: LOG
-  # Version: 1
-  # Author: Michael Witting (michael.witting)
-  
-  
 }

@@ -5,7 +5,6 @@
 #'
 #'
 #' @import MSnbase
-#' @import tidyverse
 #' @export
 readAnnotatedMgfData <- function(filename,
                                  filterAddFields = NULL,
@@ -61,7 +60,7 @@ readAnnotatedMgfData <- function(filename,
   }
   
   # convert data types (based on tidyverse)
-  addFieldsDf <- type_convert(addFieldsDf)
+  addFieldsDf <- type.convert(addFieldsDf)
   
   # create Spectra object and add metadata
   ms2Spectra <- Spectra(spectra)
