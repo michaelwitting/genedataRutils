@@ -2,7 +2,6 @@
 #'
 #'
 #' @import MSnbase
-#' @import masstrixR
 #'
 #' @export
 ms2_add_id <- function(ms2_spectra, row_anno) {
@@ -27,8 +26,8 @@ ms2_add_id <- function(ms2_spectra, row_anno) {
 # this function converts the absolute scale to relative scale (scaled to 999 for base peak)
 #'
 #' @import MSnbase
-#' @import masstrixR
-#'
+#' 
+#' @export
 ms2_abs_to_rel <- function(ms2_spectra, abs_cutoff = 0, rel_cutoff = 10) {
   
   # iterate over Spectra object
@@ -54,6 +53,30 @@ ms2_abs_to_rel <- function(ms2_spectra, abs_cutoff = 0, rel_cutoff = 10) {
     ms2_spectra[[i]]@mz <- mz_new
     ms2_spectra[[i]]@intensity <- int_new
     ms2_spectra[[i]]@peaksCount <- length(mz_new)
+    
+  }
+  
+  return(ms2_spectra)
+  
+}
+
+# this function converts the absolute scale to relative scale (scaled to 999 for base peak)
+#'
+#' @import MSnbase
+#' @export
+ms2_round_mz <- function(ms2_spectra, digits = 4) {
+  
+  # iterate over Spectra object
+  for(i in 1:length(ms2_spectra)) {
+    
+    # get spectrum
+    mz_old <- mz(ms2_spectra[[i]])
+    
+    # convert to rel scale
+    mz_new <- round(mz_old, digits)
+    
+    # update Spectrum2 object within Spectra
+    ms2_spectra[[i]]@mz <- mz_new
     
   }
   

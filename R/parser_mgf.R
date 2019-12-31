@@ -12,6 +12,8 @@ readAnnotatedMgfData <- function(filename,
                                  smoothed = FALSE,
                                  cache = 1) {
   
+  require(MSnbase)
+  
   mgf <- scan(file = filename, what = "",
               sep = "\n", quote = "",
               allowEscapes = FALSE,

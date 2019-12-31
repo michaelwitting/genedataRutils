@@ -24,6 +24,8 @@
 #' @export
 read_gda_file <- function(path_to_file, prefix = "") {
   
+  require(stringr)
+  
   # create data frames for data
   rowAnnoDf <- data.frame(stringsAsFactors = FALSE)
   dataDf <- data.frame()
@@ -114,14 +116,7 @@ read_gda_file <- function(path_to_file, prefix = "") {
       colAnnoDf[name] <- as.factor(unlist(colAnnoDf[name]))
     }
   }
-  
-  # correct the format of the columns
-  # rowAnnoDf$m.z <- as.numeric(rowAnnoDf$`m/z`)
-  # rowAnnoDf$RT <- as.numeric(rowAnnoDf$RT)
-  # rowAnnoDf$`RT Min` <- as.numeric(rowAnnoDf$`RT Min`)
-  # rowAnnoDf$`RT Max` <- as.numeric(rowAnnoDf$`RT Max`)
-  # rowAnnoDf$`m/z Min` <- as.numeric(rowAnnoDf$`m/z Min`)
-  # rowAnnoDf$`m/z Max` <- as.numeric(rowAnnoDf$`m/z Max`)
+
   rowAnnoDf <- type.convert(rowAnnoDf)
   colAnnoDf <- type.convert(colAnnoDf)
   dataDf <- type.convert(dataDf)

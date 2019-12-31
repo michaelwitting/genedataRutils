@@ -9,9 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Read Cluster and Peak data
+## Reconstruction of isotope pattern
 
-```{r cars}
+Genedata Expressionist for MS has no functionality to display the isotope pattern that have been grouped together. However, peaks and isotope clusters can be exported as separate <code>.gda<code> files. These files can be used to reconstruct the isotope pattern from the grouping. The prequisite is that the files contain the respective cluster and peak IDs. This vignette shows based on example files how the isotope pattern can be reconstructed.
+
+## Read MS1 cluster and peak data
+
+In the first step the required libraries are loaded and the two example <code>.gda</code> file are read. To be able to differentiate between the ungrouped peaks and the grouped clusters the prefixes "peak_" and "cluster_" are used.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # load required libraries
 library(genedataRutils)
 library(MSnbase)
@@ -32,13 +38,7 @@ head(peak_row_anno)
 
 ## Reconstruct MS1 spectra
 
-TODO: Subset data to specific range for vignette
-
-```{r}
-# isolate only the cluster of Fluopicolide
-
-```
-
+The MS1 spectra are reconstructed for each file and cluster. This requires the row annotation data frame for the peaks and cluster as well as the intensities of the individual peaks. The function <code>recon_iso_pattern()</code> combines this information and returns a <code>Spectra</code> object which contains the MS1 spectrum for each cluster in each sample. The example used here contains four clusters and four samples. Therefore, 16 spectra are returned. The code can be parallelized by registering a parallel cluster. This is strongly advisable, since for a large number of cluster and samples long run times are expected.
 
 ```{r}
 # reconstruct MS1 spectra for Fluopicolide
@@ -52,7 +52,19 @@ registerDoParallel(cl)
 ms1_spectra <- recon_iso_pattern(peak_row_anno, cluster_row_anno, peak_ms_data)
 
 stopCluster(cl)
+
+ms1_spectra
 ```
+
+```{r}
+for(i in seq_along(ms1_spectra)) {
+  plot(ms1_spectra[[i]])
+}
+```
+
+
+
+Spectra can be combined if required
 
 ```{r}
 comb_ms1_spec <- combineSpectra(ms1_spectra, fcol = "CLUSTER_ID", intensityFun = base::sum, mzd = 0.005)

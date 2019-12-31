@@ -1,8 +1,15 @@
 # Genedata does not allow to export MS1 isotope pattern directly. They have to be reconstructed from the Peak and Cluster data
 #'
 #'
+#' @import tidyverse
 #' @export
 recon_iso_pattern <- function(peak_row_anno, cluster_row_anno, peak_ms_data) {
+  
+  # add here function to estimate the cluster format
+  cluster_ids <- row.names(cluster_row_anno)
+  cluster_ids <- stringr::str_remove(cluster_ids, "Cluster_")
+  
+  cluster_id_pad <- max(nchar(cluster_ids))
   
   # reshape peak ms data
   peak_ms_data_melt <- reshape2::melt(rownames_to_column(peak_ms_data), id = c("rowname"))
@@ -58,7 +65,7 @@ recon_iso_pattern <- function(peak_row_anno, cluster_row_anno, peak_ms_data) {
     
     # convert
     ms1_spectra_clipboard_spectra <- Spectra(ms1_spectra_clipboard_list)
-    mcols(ms1_spectra_clipboard_spectra)$CLUSTER_ID <- cluster
+    mcols(ms1_spectra_clipboard_spectra)$CLUSTER_ID <- paste0("Cluster_", stringr::str_pad(cluster, cluster_id_pad, pad = "0"))
     mcols(ms1_spectra_clipboard_spectra)$RAWFILE <- unique_sample_names
     
     # add to previous list
