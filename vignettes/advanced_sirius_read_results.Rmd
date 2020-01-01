@@ -1,0 +1,26 @@
+---
+title: "Reading Sirius Results"
+author: "Michael Witting"
+date: "1 1 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r cars}
+# load required libraries
+library(genedataRutils)
+library(MSnbase)
+library(tidyverse)
+
+result_file <- system.file("extdata/20191108_Pesticides_Sirius_Results.csv", package = "genedataRutils")
+
+sirius_results <- read_sirius_result_ms1only(result_file)
+
+```
+
