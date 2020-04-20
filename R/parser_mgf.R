@@ -1,3 +1,6 @@
+# ==============================================================================
+# DEPRECATED FUNCTIONS
+# ==============================================================================
 #' This function allows to read mgf files which contain additional fields to standard
 #' ased on the code contributed by Guangchuang Yu \email{guangchuangyu@@gmail.com}
 #' Modified by Sebastian Gibb \email{mail@@sebastiangibb.de}
@@ -12,8 +15,8 @@ readAnnotatedMgfData <- function(filename,
                                  smoothed = FALSE,
                                  cache = 1) {
   
-  require(MSnbase)
-  
+  .Deprecated(msg = "Function will be replaced by Spectra backend")
+
   mgf <- scan(file = filename, what = "",
               sep = "\n", quote = "",
               allowEscapes = FALSE,
@@ -40,7 +43,7 @@ readAnnotatedMgfData <- function(filename,
   # iterate over all spectra in .mgfi file
   for (i in seq(along = spectra)) {
     
-    specInfo <- extractMgfSpectrum2Info(mgf[begin[i]:end[i]],
+    specInfo <- .extractMgfSpectrum2Info(mgf[begin[i]:end[i]],
                                         centroided = centroided,
                                         filterAddFields =  filterAddFields)
     spectra[[i]] <- specInfo$spectrum
@@ -77,7 +80,9 @@ readAnnotatedMgfData <- function(filename,
 #'
 #'
 #' @import MSnbase
-extractMgfSpectrum2Info <- function(mgf, centroided, filterAddFields = NULL) {
+.extractMgfSpectrum2Info <- function(mgf, centroided, filterAddFields = NULL) {
+  
+  .Deprecated("readGda")
   
   # grep description
   desc.idx <- grep("=", mgf)

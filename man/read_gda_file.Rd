@@ -36,5 +36,5 @@ and rows (row_anno and col_anno).
 \examples{
 file <- system.file('')
 read_gda_file(file, prefix = 'pesticide')
-
+#'
 }

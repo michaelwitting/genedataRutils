@@ -11,14 +11,14 @@ contain CLUSTER_ID in the metadata. Two output files are generated. The first
  Both the .mgf file and the feature table can be used with the XCMS3 branch 
  of the GNPS feature based molecular networking}
 \usage{
-create_gnps_files(ms_data, row_anno, ms2_spectra_id, path_to_save)
+create_gnps_files(ms_data, row_anno, spectra, path_to_save)
 }
 \arguments{
 \item{ms_data}{Data frame with the intensity or peak area values}
 
 \item{row_anno}{Data frame with the row annotations}
 
-\item{ms2_spectra_id}{Spectra object with the MS2 spectra, CLUSTER_ID column in metadata is required}
+\item{spectra}{Spectra object with the MS2 spectra, CLUSTER_ID column in metadata is required}
 
 \item{path_to_save}{Path where the results files shall be saved}
 }

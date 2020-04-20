@@ -1,20 +1,31 @@
 Package: genedataRutils
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Collection of utility functions to work with .gda files in R
+Version: 0.1.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Michael",
+           family = "Witting",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+           email = "michael.witting@helmholtz-muenchen.de",
+           comment = c(ORCID = "0000-0002-1462-4426"))
+Description: Reading and working with Genedata Expressionist for MS .gda files
+    in R
+License: CC BY-SA 4.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Depends:
-    R (>= 3.6.0)
+    R (>= 3.6.0),
+    MSnbase,
+    tidyverse,
+    reshape2
 biocViews:
     MSnbase
 Imports:
     stringr
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+URL: https://github.com/michaelwitting/genedataRutils
+BugReports: https://github.com/michaelwitting/genedataRutils/issues
+VignetteBuilder: knitr
