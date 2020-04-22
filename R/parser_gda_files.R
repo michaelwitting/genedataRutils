@@ -17,6 +17,8 @@
 #'    the second the row annotation and the third the column annotations.
 #'
 #' @author Michael Witting
+#' 
+#' @importFrom utils type.convert
 #'
 #' @export
 #'

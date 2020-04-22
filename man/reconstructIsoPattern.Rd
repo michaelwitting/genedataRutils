@@ -7,19 +7,19 @@
 reconstructIsoPattern(peaks, cluster)
 }
 \arguments{
-\item{peaks}{`list` List with data read from .gda file containing individual 
+\item{peaks}{\code{list} List with data read from .gda file containing individual
 MS1 peaks}
 
-\item{cluster}{`list`List with data read from .gda file containing grouped 
+\item{cluster}{\code{list}List with data read from .gda file containing grouped
 MS1 cluster}
 }
 \value{
 A list of three data frames, the first contains the actual MS data,
-   the second the row annotation and the third the column annotations.
+the second the row annotation and the third the column annotations.
 }
 \description{
-`reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
-     directly. They have to be reconstructed from the Peak and Cluster data
+\code{reconstructIsoPattern} Genedata does not allow to export MS1 isotope pattern
+directly. They have to be reconstructed from the Peak and Cluster data
 }
 \examples{
 

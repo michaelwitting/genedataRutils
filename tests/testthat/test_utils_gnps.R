@@ -12,7 +12,7 @@ test_that("Util functions for working with MS2", {
                    pattern = "mgf$",
                    full.names = TRUE)
   
-  spectra <- Spectra::Spectra(mgf_files, source = MsBackendMgf())
+  spectra <- Spectra(mgf_files, source = MsBackendMgf())
   
   # add MS1 id
   spectra_new <- ms2AddId(gda_result, spectra)
@@ -31,5 +31,3 @@ test_that("Util functions for working with MS2", {
   expect_equal(unique(gnps_spectra$scanIndex), c(615, 331, 444, 311))
   
 })
-
-

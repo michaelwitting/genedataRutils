@@ -33,6 +33,12 @@ createGnpsFiles <- function(x, spectra) {
     stop("No column CLUSTER_ID found in spectra. Perform ms2_add_id() first")
   }
   
+  # check if data contains NAs and remove
+  if(any(is.na(spectra$CLUSTER_ID))) {
+    # filter spectra
+    spectra <- spectra[which(!is.na(spectra$CLUSTER_ID))]
+  }
+  
   # create feature table
   # create new DF with feature table in XCMS3 format
   feature_table <- data.frame(Row.names = row.names(row_anno),
@@ -51,13 +57,10 @@ createGnpsFiles <- function(x, spectra) {
   
   # convert names in MS2 metadata to XCMS3 format
   # create fields required
-  spectra$scanIndex <- as.integer(str_extract(spectra$CLUSTER_ID, "\\d+"))
+  spectra$scanIndex <- as.integer(regmatches(spectra$CLUSTER_ID, regexpr("\\d+", spectra$CLUSTER_ID)))
   spectra$FEATURE_ID <- gsub("Cluster_", "FT", spectra$CLUSTER_ID)
   spectra$PEAK_ID <- spectra$FEATURE_ID
   spectra$COMPOUND <- spectra$FEATURE_ID
-  
-  # filter spectra
-  spectra <- spectra[which(!is.na(spectra$FEATURE_ID))]
 
   list(feature_table, spectra)
   
