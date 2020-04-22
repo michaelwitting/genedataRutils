@@ -2,31 +2,28 @@
 % Please edit documentation in R/utils_gnps.R
 \name{createGnpsFiles}
 \alias{createGnpsFiles}
-\title{Importing Genedata Expressionist for MS .gda files}
+\title{Reformat .gda and MS2 spectra for GNPS FBMN}
 \usage{
-createGnpsFiles(x, spectra, path = "")
+createGnpsFiles(x, spectra)
 }
 \arguments{
-\item{file}{`character` Path to .gda file that shall be read.}
+\item{x}{\code{list} List with data read from .gda file containing grouped
+MS1 cluster}
+
+\item{spectra}{\code{Spectra}MSnbase Spectra object containing MS2 spectra to be
+matched with the MS1 data}
 }
 \value{
-A list of three data frames, the first contains the actual MS data,
-   the second the row annotation and the third the column annotations.
+A \code{list} with the reformated feature table in XCMS3 format as first
+element and a reformated \code{Spectra} as second element.
 }
 \description{
-`createGnpsFiles` Genedata Expressionist for MS can export obtained data in multiple file formats.
-One is the .gda format, which can be read by the Analyst module. This file
-contains the actual data (e.g. peak intensities, areas etc...) and additional
-annotations.
-This functions reads directly a .gda file and returns a list with three 
-distinct data frames. The first element contains the actual MS data, the 
-second contains annotation of the rows and the thrid the annotation of the
-columns.
+\code{createGnpsFiles} reformats the Gendata data matrix and spectra to be consistent
+with the requirement of GNPS FBMN. The resulting data can be fed into the
+XCMS3 workflow.
 }
 \examples{
 
-file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-pest_cluster <- readGda(file)
 
 }
 \author{

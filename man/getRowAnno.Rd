@@ -7,13 +7,13 @@
 getRowAnno(x)
 }
 \arguments{
-\item{x}{`list` List with data read from .gda file.}
+\item{x}{\code{list} List with data read from .gda file.}
 }
 \value{
 A data frame wit row annotations.
 }
 \description{
-`getRowData` returns the actual table with features from the read .gda file
+\code{getRowData} returns the actual table with features from the read .gda file
 }
 \examples{
 

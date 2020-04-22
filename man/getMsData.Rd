@@ -7,13 +7,13 @@
 getMsData(x)
 }
 \arguments{
-\item{x}{`list` List with data read from .gda file.}
+\item{x}{\code{list} List with data read from .gda file.}
 }
 \value{
 A data frame with the feature data
 }
 \description{
-`getMsData` returns the actual table with features from the read .gda file
+\code{getMsData} returns the actual table with features from the read .gda file
 }
 \examples{
 

@@ -19,7 +19,7 @@ Depends:
     Spectra (>= 0.5.0),
     MsCoreUtils(>= 0.99.3),
     MsBackendMgf,
-    tidyverse,
+    BiocGenerics,
     reshape2
 Imports:
     stringr

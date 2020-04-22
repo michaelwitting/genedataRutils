@@ -7,19 +7,19 @@
 readGda(file)
 }
 \arguments{
-\item{file}{`character` Path to .gda file that shall be read.}
+\item{file}{\code{character} Path to .gda file that shall be read.}
 }
 \value{
 A list of three data frames, the first contains the actual MS data,
-   the second the row annotation and the third the column annotations.
+the second the row annotation and the third the column annotations.
 }
 \description{
-`readGda` Genedata Expressionist for MS can export obtained data in multiple file formats.
+\code{readGda} Genedata Expressionist for MS can export obtained data in multiple file formats.
 One is the .gda format, which can be read by the Analyst module. This file
 contains the actual data (e.g. peak intensities, areas etc...) and additional
 annotations.
-This functions reads directly a .gda file and returns a list with three 
-distinct data frames. The first element contains the actual MS data, the 
+This functions reads directly a .gda file and returns a list with three
+distinct data frames. The first element contains the actual MS data, the
 second contains annotation of the rows and the thrid the annotation of the
 columns.
 }

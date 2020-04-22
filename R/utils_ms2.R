@@ -2,7 +2,7 @@
 #'
 #' @description
 #'
-#' `reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
+#' `ms2AddId` Genedata does not allow to export MS1 isotope pattern
 #'      directly. They have to be reconstructed from the Peak and Cluster data
 #'
 #' @param x `list` List with data read from .gda file containing grouped 
@@ -10,12 +10,11 @@
 #' @param spectra `Spectra`MSnbase Spectra object containing MS2 spectra to be
 #'     matched with the MS1 data
 #'
-#' @return A list of three data frames, the first contains the actual MS data,
-#'    the second the row annotation and the third the column annotations.
+#' @return `Spectra` with the additional column CLUSTER_ID.
 #'
 #' @author Michael Witting
 #' 
-#' @import Spectra
+#' @importFrom BiocGenerics lapply
 #'
 #' @export
 #'
