@@ -14,6 +14,8 @@
 #'    the second the row annotation and the third the column annotations.
 #'
 #' @author Michael Witting
+#' 
+#' @import Spectra
 #'
 #' @export
 #'
@@ -25,12 +27,12 @@ ms2AddId <- function(x, spectra) {
   row_anno <- getRowAnno(x)
 
   # add cluster ID
-  mcols(spectra)$CLUSTER_ID <- unlist(lapply(spectra, function(x, df) {
+  spectra$CLUSTER_ID <- unlist(lapply(spectra, function(x, df) {
     
-    id <- row.names(df[which(df$`RT Min` * 60 < rtime(x) &
-                               df$`RT Max`* 60 > rtime(x) &
-                               df$`m/z Min` < precursorMz(x) &
-                               df$`m/z Max` > precursorMz(x)),])
+    id <- row.names(df[which(df$`RT Min` * 60 < x$rtime &
+                               df$`RT Max`* 60 > x$rtime &
+                               df$`m/z Min` < x$precursorMz &
+                               df$`m/z Max` > x$precursorMz),])
 
     id[1]
     
@@ -38,35 +40,5 @@ ms2AddId <- function(x, spectra) {
   
   # return spectra
   spectra
-  
-}
-
-# ==============================================================================
-# DEPRECATED FUNCTIONS
-# ==============================================================================
-# this functions read spectra in mgf files and adds peak or cluster id
-#'
-#'
-#' @import MSnbase
-#'
-#' @export
-ms2_add_id <- function(ms2_spectra, row_anno) {
-  
-  .Deprecated("ms2AddId")
-  
-  # add cluster ID
-  mcols(ms2_spectra)$CLUSTER_ID <- unlist(lapply(ms2_spectra, function(x, df) {
-    
-    id <- row.names(df[which(df$`RT Min` * 60 < rtime(x) &
-                               df$`RT Max`* 60 > rtime(x) &
-                               df$`m/z Min` < precursorMz(x) &
-                               df$`m/z Max` > precursorMz(x)),])
-    
-    id[1]
-    
-  }, df = row_anno))
-  
-  # return values
-  return(ms2_spectra)
   
 }
