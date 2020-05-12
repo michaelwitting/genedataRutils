@@ -4,22 +4,21 @@
 \alias{ms2AddId}
 \title{Importing Genedata Expressionist for MS .gda files}
 \usage{
-ms2AddId(ms2_spectra, row_anno)
+ms2AddId(x, spectra)
 }
 \arguments{
-\item{peaks}{`list` List with data read from .gda file containing individual 
-MS1 peaks}
-
-\item{cluster}{`list`List with data read from .gda file containing grouped 
+\item{x}{\code{list} List with data read from .gda file containing grouped
 MS1 cluster}
+
+\item{spectra}{\code{Spectra}MSnbase Spectra object containing MS2 spectra to be
+matched with the MS1 data}
 }
 \value{
-A list of three data frames, the first contains the actual MS data,
-   the second the row annotation and the third the column annotations.
+\code{Spectra} with the additional column CLUSTER_ID.
 }
 \description{
-`reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
-     directly. They have to be reconstructed from the Peak and Cluster data
+\code{ms2AddId} Genedata does not allow to export MS1 isotope pattern
+directly. They have to be reconstructed from the Peak and Cluster data
 }
 \examples{
 
