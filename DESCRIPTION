@@ -23,8 +23,6 @@ Depends:
     reshape2,
     IRanges,
     S4Vectors
-Imports:
-    stringr
 Suggests:
     testthat,
     knitr (>= 1.1.0),
@@ -33,7 +31,8 @@ Suggests:
     rmarkdown
 Remotes:
     RforMassSpectrometry/Spectra,
-    RforMassSpectrometry/MsCoreUtils
+    RforMassSpectrometry/MsCoreUtils,
+    RforMassSpectrometry/MsBackendMgf
 URL: https://github.com/michaelwitting/genedataRutils
 BugReports: https://github.com/michaelwitting/genedataRutils/issues
 biocViews: Infrastructure, MassSpectrometry, Metabolomics

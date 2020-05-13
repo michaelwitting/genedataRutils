@@ -1,4 +1,4 @@
-#' @title Importing Genedata Expressionist for MS .gda files
+#' @title Reconstructing Isotope Pattern from MS1 data
 #'
 #' @description
 #'
@@ -40,7 +40,9 @@ reconstructIsoPattern <- function(peaks, cluster) {
     
   }
   
+  # determine length of number to correctly create string at the end
   clusterLength <- length(gsub("Cluster_", "", row.names(ms_data_cluster)))
+  
   
   clusterIds <- row.names(ms_data_cluster)
   clusterIds <- as.integer(gsub("Cluster_", "", clusterIds))
@@ -86,4 +88,3 @@ reconstructIsoPattern <- function(peaks, cluster) {
   return(ms1_spectra)
   
 }
-
