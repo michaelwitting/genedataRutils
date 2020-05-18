@@ -46,7 +46,7 @@ readGda <- function(file) {
     }
     
     # check for different line content
-    if (grepl("^Name", line)) {
+    if (grepl("^(Name|Column)", line)) {
       
       # get content splitted
       content <- strsplit(line, "\t")[[1]]
