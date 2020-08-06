@@ -1,0 +1,95 @@
+---
+title: "Description and usage of genedataRutils"
+output:
+    BiocStyle::html_document:
+        toc_float: true
+vignette: >
+    %\VignetteIndexEntry{Description and usage of Description and usage of genedataRutils}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignettePackage{Spectra}
+    %\VignetteDepends{Spectra,BiocStyle}
+---
+
+```{r style, echo = FALSE, results = 'asis', message=FALSE}
+BiocStyle::markdown()
+```
+
+**Package**: `r Biocpkg("genedataRutils")`<br />
+**Authors**: `r packageDescription("genedataRutils")[["Author"]] `<br />
+**Last modified:** `r file.info("genedataRutils.Rmd")$mtime`<br />
+**Compiled**: `r date()`
+
+```{r, echo = FALSE, message = FALSE}
+library(BiocStyle)
+```
+
+# Introduction
+
+Genedata Expressionist for MS allows to export results in different file formats. One of these formats is <code>.gda</code>. This format is read by the Analyst module in Genedata Expressionist for MS. Beside the actual peak data it contains metadata like annotations of samples are peaks. The package <code>genedataRutils</code> was developed to enable seamless reading of these files into R and allow further processing. This vignette describes the basic functions for reading of MS1 data in form of <code>.gda</code> files and MS2 data in form of <code>.mgf</code> files.
+
+# Loading the library
+
+The <code>genedataRutils</code> package is available from GitHub and can be directly installed from there using the <code>devtools::install_github()</code> function. Once installed the package can be loaded via <code>library()</code>. This vignette uses additionally functionalities from the <code>MSnbase</code> package for handling of MS2 data.
+
+```{r, eval=FALSE}
+devtools::install_github("michaelwitting/genedataRutils")
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# load required libraries
+library(genedataRutils)
+```
+
+# Reading MS1 
+
+<code>.gda</code> files are read via the <code>readGda()</code> function. A single file is read and three data frames are created, which are returned as list. The first one is called <code>ms_data</code> and contains the actual intensties or areas that were exported. The two other data frames are called <code>col_anno</code> and <code>row_anno</code> and contain the annotations of the rows and the columns. All data frames are using the IDs of the peaks, cluster etc as row names. They can be either accessed with <code>[</code> or with the functions below.
+The example below reads a short example distributed with the <code>genedataRutils</code> package.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# load example file
+gda_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda",
+                        package = "genedataRutils")
+
+# read example file
+gda_result <- readGda(gda_file)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+ms_data <- getMsData(gda_result)
+row_anno <- getRowAnno(gda_result)
+col_anno <- getColAnno(gda_result)
+```
+
+# Linking MS1 and MS2 data
+
+In order to enable correct identification of metabolites MS2 data is required. Genedata Expressionist for MS can export MS2 data as .mgf files. These can be loaded e.g. using the <code>MsBackendMgf</code>. <code>genedataRutils</code> requires spectra as <code>Spectra</code> object.
+
+```{r}
+library(Spectra)
+library(MsBackendMgf)
+
+# load MS2 data
+mgf_files <- dir(system.file("extdata",
+                               package = "genedataRutils"),
+                   pattern = "mgf$",
+                   full.names = TRUE)
+  
+spectra <- Spectra(mgf_files, source = MsBackendMgf())
+```
+
+The function <code>ms2AddId()</code> adds the ID of the corresponding MS1 peak as new variable to the <code>Spectra</code> object. It uses the peak boundaries in the row annotations and checks if a <code>precursorMz</code> and <code>rtime</code> are within this boundaries. The new variable is called <code>CLUSTER_ID</code>.
+
+```{r}
+# add MS1 id
+spectra <- ms2AddId(gda_result, spectra)
+head(spectra$CLUSTER_ID)
+```
+
+This new variable can be used to subset the <code>Spectra</code> object.
+
+```{r}
+spectra[which(spectra$CLUSTER_ID == "Cluster_0615")]
+```
+
