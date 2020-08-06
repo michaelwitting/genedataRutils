@@ -2,13 +2,18 @@
 # Rowtype: 2D PEAK															
 # Observable: Max. Intensity															
 # Row Annotations: 11															
-# Column Annotations: 2															
+# Column Annotations: 7															
 # Transformation: LOG															
 # Version: 1															
 # Author: Michael Witting (michael.witting)															
 Name	MSMSpos_0402_RP_2-A,1_01_15100	MSMSpos_0403_RP_2-A,1_01_15101	MSMSpos_0404_RP_2-A,1_01_15103	MSMSpos_0405_RP_2-A,1_01_15104	Cluster [C]	Group [C]	m/z	RT	m/z Width	RT Height	Area	m/z Min	m/z Max	RT Min	RT Max
 Source Type [C]	Bruker BAF	Bruker BAF	Bruker BAF	Bruker BAF											
 Flags	BG Subtracted|Calibrated|Clamped	BG Subtracted|Calibrated|Clamped	BG Subtracted|Calibrated|Clamped	BG Subtracted|Calibrated|Clamped											
+Source  [C]	Standard Mix A	Standard Mix A	Standard Mix A	Standard Mix A											
+Sample [C]	Standard Mix A	Standard Mix A	Standard Mix A	Standard Mix A											
+Assay [C]	MSMSpos_0402_RP_2-A,1_01_15100	MSMSpos_0403_RP_2-A,1_01_15101	MSMSpos_0404_RP_2-A,1_01_15103	MSMSpos_0405_RP_2-A,1_01_15104											
+File [C]	MSMSpos_0402_RP_2-A,1_01_15100.mzML	MSMSpos_0403_RP_2-A,1_01_15101.mzML	MSMSpos_0404_RP_2-A,1_01_15103.mzML	MSMSpos_0405_RP_2-A,1_01_15104.mzML											
+Sample Type [C]	standard	standard	standard	standard											
 Peak_1940	258069.55	261544.28	264377.12	267178.5	311	252	289.1205133	5.050113713	0.024935229	0.229933333	0.00573344	289.1111736	289.1361088	4.9432	5.173133333
 Peak_1955	43679.19	43860.29	44283.98	43811.055	311	252	290.1239099	5.05027273	0.027060002	0.189416667	0.005125615	290.1135844	290.1406444	4.970233333	5.15965
 Peak_1971	86312.484	86716.91	87868.92	88604.35	311	252	291.1178066	5.050375369	0.022936105	0.189416667	0.004344481	291.1093898	291.1323259	4.970233333	5.15965
