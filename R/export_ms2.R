@@ -2,19 +2,20 @@
 #'
 #' @description
 #'
-#' `exportMgf` Genedata does not allow to export MS1 isotope pattern
-#'      directly. They have to be reconstructed from the Peak and Cluster data
+#' `exportMgf` This function allows to export <code>Spectra</code> object to .mgf
+#'  files. If the <code>Spectra</code> object contains the CLUSTER_ID variable 
+#'  this is additionally exported as metadata.
 #'
-#' @param x `list` List with data read from .gda file containing grouped 
-#'     MS1 cluster
-#' @param spectra `Spectra`MSnbase Spectra object containing MS2 spectra to be
-#'     matched with the MS1 data
-#'
-#' @return `Spectra` with the additional column CLUSTER_ID.
+#' @param splist `Spectra` Spectra object containing spectra to be exported
+#' 
+#' @param con `character` File name for export to .mgf
+#' 
+#' @param COM `character` Optional comment
+#' 
+#' @param TITLE `character` Optional title
 #'
 #' @author Michael Witting
 #' 
-#' @importFrom BiocGenerics lapply
 #'
 #' @export
 #'
@@ -51,6 +52,8 @@ exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
 
 }
 
+#' private function for writing content
+#' 
 .writeMgfContent <- function(sp, TITLE = NULL, con) {
   
   # custom cat function for writing of content
@@ -100,6 +103,6 @@ exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
     
   }
 
-  .cat("\n", paste(sp$mz, sp$intensity, collapse = "\n"))
+  .cat("\n", paste(sp$mz[[1]], sp$intensity[[1]], collapse = "\n"))
   .cat("\nEND IONS\n")
 }

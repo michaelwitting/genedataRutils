@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_ms1.R
 \name{reconstructIsoPattern}
 \alias{reconstructIsoPattern}
-\title{Importing Genedata Expressionist for MS .gda files}
+\title{Reconstructing Isotope Pattern from MS1 data}
 \usage{
 reconstructIsoPattern(peaks, cluster)
 }
@@ -14,8 +14,8 @@ MS1 peaks}
 MS1 cluster}
 }
 \value{
-A list of three data frames, the first contains the actual MS data,
-the second the row annotation and the third the column annotations.
+\code{Spectra} Returns a Spectra object with the reconstructed MS1 isotope
+pattern
 }
 \description{
 \code{reconstructIsoPattern} Genedata does not allow to export MS1 isotope pattern

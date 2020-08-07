@@ -10,8 +10,8 @@
 #' @param cluster `list`List with data read from .gda file containing grouped 
 #'     MS1 cluster
 #'
-#' @return A list of three data frames, the first contains the actual MS data,
-#'    the second the row annotation and the third the column annotations.
+#' @return `Spectra` Returns a Spectra object with the reconstructed MS1 isotope
+#'     pattern
 #'
 #' @author Michael Witting
 #' 
