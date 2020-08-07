@@ -20,7 +20,7 @@ In the first step the required libraries are loaded and the two example <code>.g
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # load required libraries
 library(genedataRutils)
-library(MSnbase)
+library(Spectra)
 library(tidyverse)
 
 # files with MS1 data
@@ -28,12 +28,15 @@ cluster_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", pack
 peak_file <- system.file("extdata/20191108_Pesticides_test_Peaks.gda", package = "genedataRutils")
 
 # read MS1 data
-read_gda_file(cluster_file, prefix = "cluster_")
-read_gda_file(peak_file, prefix = "peak_")
+cluster <- readGda(cluster_file)
+peaks <- readGda(peak_file)
+
+#read_gda_file(cluster_file, prefix = "cluster_")
+#read_gda_file(peak_file, prefix = "peak_")
 
 # show first entries
-head(cluster_row_anno)
-head(peak_row_anno)
+head(getRowAnno(cluster))
+head(getRowAnno(peaks))
 ```
 
 ## Reconstruct MS1 spectra
@@ -42,23 +45,15 @@ The MS1 spectra are reconstructed for each file and cluster. This requires the r
 
 ```{r}
 # reconstruct MS1 spectra for Fluopicolide
-library(foreach)
-library(doParallel)
-
-# create cluster for parallel processing
-cl <- parallel::makeCluster(6)
-registerDoParallel(cl)
-
-ms1_spectra <- recon_iso_pattern(peak_row_anno, cluster_row_anno, peak_ms_data)
-
-stopCluster(cl)
-
-ms1_spectra
+isoPattern <- reconstructIsoPattern(peaks, cluster)
+head(isoPattern)
 ```
 
 ```{r}
-for(i in seq_along(ms1_spectra)) {
-  plot(ms1_spectra[[i]])
+for(i in seq_along(isoPattern)) {
+  
+  plot(isoPattern[i]$mz[[1]], isoPattern[i]$intensity[[1]], type = "h", main = isoPattern[i]$CLUSTER_ID)
+  
 }
 ```
 
@@ -67,7 +62,12 @@ for(i in seq_along(ms1_spectra)) {
 Spectra can be combined if required
 
 ```{r}
-comb_ms1_spec <- combineSpectra(ms1_spectra, fcol = "CLUSTER_ID", intensityFun = base::sum, mzd = 0.005)
-plot(comb_ms1_spec[[4]])
+isoPatternComb <- combineSpectra(isoPattern, f = isoPattern$CLUSTER_ID, intensityFun = base::sum, mzd = 0.005)
+
+for(i in seq_along(isoPatternComb)) {
+  
+  plot(isoPatternComb[i]$mz[[1]], isoPatternComb[i]$intensity[[1]], type = "h", main = isoPatternComb[i]$CLUSTER_ID)
+  
+}
 ```
 
