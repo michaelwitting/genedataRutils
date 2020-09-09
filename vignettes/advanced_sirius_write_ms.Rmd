@@ -1,26 +1,44 @@
 ---
 title: "Creating Sirius input files"
-author: "Michael Witting"
-date: "14 12 2019"
-output: html_document
+output:
+    BiocStyle::html_document:
+        toc_float: true
+vignette: >
+    %\VignetteIndexEntry{Createing Sirius .ms files}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignettePackage{Spectra}
+    %\VignetteDepends{Spectra,BiocStyle}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r style, echo = FALSE, results = 'asis', message=FALSE}
+BiocStyle::markdown()
 ```
 
-## Creating .ms files for Sirius
 
-The software Sirius allows the analysis of MS1 and MS2 data for calculation of sum formulae and additionally integrates CSI:FingerID for analysis and annotation of MS2 spectra. Sirius is using its own text based input format. <code>.ms</code> files can be generated for a combination of MS1 and MS2 spectra for one cluster by using the function <code>write_ms_file</code>. This vignette describes how to generate <code>.ms</code> files for the example data supplied with <code>genedataRutils</code>.
+```{r, echo = FALSE, message = FALSE}
+library(BiocStyle)
+```
 
-## Reading data and reconstruct MS1
-
-In the first step all the data is read and the MS1 spectra reconstructed as described in the vignette "advanced_reconstruct_ms1". Additionally the MS2 data is read. All functions used are described in the vignette "basic_reading_data".
+# Introduction
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # load required libraries
 library(genedataRutils)
-library(MSnbase)
+```
+
+## Reconstruction of isotope pattern
+
+Genedata Expressionist for MS has no functionality to display the isotope pattern that have been grouped together. However, peaks and isotope clusters can be exported as separate <code>.gda<code> files. These files can be used to reconstruct the isotope pattern from the grouping. The prequisite is that the files contain the respective cluster and peak IDs. This vignette shows based on example files how the isotope pattern can be reconstructed.
+
+## Read MS1 cluster and peak data
+
+In the first step the required libraries are loaded and the two example <code>.gda</code> file are read. To be able to differentiate between the ungrouped peaks and the grouped clusters the prefixes "peak_" and "cluster_" are used.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# load required libraries
+library(genedataRutils)
+library(Spectra)
 library(tidyverse)
 
 # files with MS1 data
@@ -28,39 +46,65 @@ cluster_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", pack
 peak_file <- system.file("extdata/20191108_Pesticides_test_Peaks.gda", package = "genedataRutils")
 
 # read MS1 data
-read_gda_file(cluster_file, prefix = "cluster_")
-read_gda_file(peak_file, prefix = "peak_")
+cluster <- readGda(cluster_file)
+peaks <- readGda(peak_file)
 
-# read MS2 data
-mgf_files <- list.files(system.file("extdata", package = "genedataRutils"),
-                        pattern = ".mgf$",
-                        full.names = TRUE)
+#read_gda_file(cluster_file, prefix = "cluster_")
+#read_gda_file(peak_file, prefix = "peak_")
 
-ms2_spectra <- Spectra()
+# show first entries
+head(getRowAnno(cluster))
+head(getRowAnno(peaks))
+```
 
-for(mgf_file in mgf_files) {
+## Reconstruct MS1 spectra
+
+The MS1 spectra are reconstructed for each file and cluster. This requires the row annotation data frame for the peaks and cluster as well as the intensities of the individual peaks. The function <code>recon_iso_pattern()</code> combines this information and returns a <code>Spectra</code> object which contains the MS1 spectrum for each cluster in each sample. The example used here contains four clusters and four samples. Therefore, 16 spectra are returned. The code can be parallelized by registering a parallel cluster. This is strongly advisable, since for a large number of cluster and samples long run times are expected.
+
+```{r}
+# reconstruct MS1 spectra for Fluopicolide
+isoPattern <- reconstructIsoPattern(peaks, cluster)
+head(isoPattern)
+```
+
+```{r}
+for(i in seq_along(isoPattern)) {
   
-  ms2_clipboard <- readAnnotatedMgfData(mgf_file)
-  ms2_spectra <- append(ms2_spectra, ms2_clipboard)
+  plot(isoPattern[i]$mz[[1]], isoPattern[i]$intensity[[1]], type = "h", main = isoPattern[i]$CLUSTER_ID)
   
 }
+```
 
-# Add the cluster ids to the spectra
-ms2_spectra_id <- ms2_add_id(ms2_spectra, cluster_row_anno)
+Spectra can be combined if required
 
-# reconstruct MS1 spectra
-library(foreach)
-library(doParallel)
+```{r}
+isoPatternComb <- combineSpectra(isoPattern, f = isoPattern$CLUSTER_ID, intensityFun = base::sum, mzd = 0.005)
 
-# create cluster for parallel processing
-cl <- parallel::makeCluster(6)
-registerDoParallel(cl)
+for(i in seq_along(isoPatternComb)) {
+  
+  plot(isoPatternComb[i]$mz[[1]], isoPatternComb[i]$intensity[[1]], type = "h", main = isoPatternComb[i]$CLUSTER_ID)
+  
+}
+```
 
-ms1_spectra <- recon_iso_pattern(peak_row_anno, cluster_row_anno, peak_ms_data)
+## Read and prepare MS2 data
 
-stopCluster(cl)
 
-ms1_spectra
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+library(Spectra)
+library(MsBackendMgf)
+
+# load MS2 data
+mgf_files <- dir(system.file("extdata",
+                               package = "genedataRutils"),
+                   pattern = "mgf$",
+                   full.names = TRUE)
+  
+spectra <- Spectra(mgf_files,
+                   source = MsBackendMgf(),
+                   backend = MsBackendDataFrame())
+
+spectra <- ms2AddId(cluster, spectra)
 ```
 
 ## Creating .ms files
@@ -68,59 +112,5 @@ ms1_spectra
 For creation of a <code>.ms</code> file a MS1 spectrum with the isotope pattern and minimum one MS2 spectrum are required. Both have to be stored in a <code>spectra</code> object and contain the metadata columns <code>CLUSTER_ID</code> and <code>RAWFILE</code>. Furthermore, the values in <code>CLUSTER_ID</code> in the MS1 and MS2 data have to match. Lastly, the row annotation of the clusters are required to isolate the averaged precursor m/z for writing of the file. The example code below fetches all the cluster ids from the MS1 spectra data and iterates over it. A <code>.ms</code> file is only written if minimum one MS2 spectrum is available.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-cluster_ids <- unique(mcols(ms1_spectra)$CLUSTER_ID)
-
-for(cluster_id in cluster_ids) {
-  
-  print(cluster_id)
-
-  # filter respective spectra
-  ms1_spectrum_filtered <- ms1_spectra[which(mcols(ms1_spectra)$CLUSTER_ID == cluster_id)]
-  ms2_spectrum_filtered <- ms2_spectra_id[which(mcols(ms2_spectra_id)$CLUSTER_ID == cluster_id)]
-  
-  # get cluster m/z
-  precursor <- cluster_row_anno$`m/z`[which(row.names(cluster_row_anno) == cluster_id)]
-  
-  raw_files <- unique(mcols(ms2_spectrum_filtered)$RAWFILE)
-  
-  for(raw_file in raw_files) {
-    
-    adduct <- "[M+H]+"
-    
-    file_name <- make.names(paste0(cluster_id, "_", adduct, "_", raw_file, ".ms"))
-    write_ms_file(ms1_spectrum_filtered, ms2_spectrum_filtered, precursor, adduct, file_name)
-    
-  }
-
-}
-```
-
-## Creating .ms files (MS1 only)
-
-There is also the possibility to only write MS1 data to files. This is advisable for data were no MS2 has been collected.
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
-cluster_ids <- unique(mcols(ms1_spectra)$CLUSTER_ID)
-
-for(cluster_id in cluster_ids) {
-  
-  print(cluster_id)
-
-  # filter respective spectra
-  ms1_spectrum_filtered <- ms1_spectra[which(mcols(ms1_spectra)$CLUSTER_ID == cluster_id)]
-  
-  # get cluster m/z
-  precursor <- cluster_row_anno$`m/z`[which(row.names(cluster_row_anno) == cluster_id)]
-    
-  raw_files <- unique(mcols(ms1_spectrum_filtered)$RAWFILE)
-  
-  for(raw_file in raw_files) {
-    
-    adduct <- "[M+H]+"
-    
-  file_name <- make.names(paste0(cluster_id, "_", adduct, "_", raw_file, "ms1_only.ms"))
-  write_ms_file_ms1only(ms1_spectrum_filtered, precursor, adduct, file_name)
-    
-  }
-}
+#writeSiriusFile(isoPatternComb, spectra)
 ```
