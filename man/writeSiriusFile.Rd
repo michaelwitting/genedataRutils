@@ -4,17 +4,12 @@
 \alias{writeSiriusFile}
 \title{Importing Genedata Expressionist for MS .gda files}
 \usage{
-writeSiriusFile(
-  ms1_spectrum,
-  ms2_spectra = Spectra(),
-  adduct,
-  con = "sirius.ms"
-)
+writeSiriusFile(ms1_spectra = Spectra(), ms2_spectra = Spectra(), folder = ".")
 }
 \arguments{
-\item{ms1_spectrum}{\code{Spectra}}
-
 \item{ms2_spectra}{\code{Spectra}}
+
+\item{ms1_spectrum}{\code{Spectra}}
 
 \item{adduct}{\code{character}}
 

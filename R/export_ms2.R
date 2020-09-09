@@ -97,9 +97,15 @@ exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
     
   }
   
+  if(length(sp$RAWFILE) && !is.na(sp$RAWFILE)) {
+    
+    .cat("\nRAWFILE=", sp$RAWFILE)
+    
+  }
+  
   if(length(sp$CLUSTER_ID) && !is.na(sp$CLUSTER_ID)) {
     
-    .cat("\nCLUSTERID=", sp$CLUSTER_ID)
+    .cat("\nCLUSTER_ID=", sp$CLUSTER_ID)
     
   }
 
