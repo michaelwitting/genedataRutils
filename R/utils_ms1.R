@@ -60,7 +60,9 @@ reconstructIsoPattern <- function(peaks, cluster) {
     peaks_full_filter <- peaks_full[which(peaks_full$`Cluster [C]` == clusterId),]
     mz <- peaks_full_filter$`m/z`
     adduct <- .adduct_conversion(row_anno_cluster$`Adduct [C]`)
-    rtime <- row_anno_cluster$RT[which(row.names(row_anno_cluster) == paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)))]
+    #rtime <- row_anno_cluster$RT[which(row.names(row_anno_cluster) == paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)))]
+    
+    #print(rtime)
     
     for(sample in samples) {
       
@@ -72,7 +74,7 @@ reconstructIsoPattern <- function(peaks, cluster) {
         mz = mz,
         intensity = int,
         sample = sample,
-        rtime = rtime * 60,
+        #rtime = rtime * 60,
         CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)),
         ADDUCT = adduct
       )
