@@ -44,12 +44,18 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
   clusters <- unique(ms1_spectra$CLUSTER_ID)
   
   for(cluster in clusters) {
+
+    file_path <- paste0(folder, "/", cluster, ".ms")
     
-    con <- paste0(folder, "/", cluster, ".ms")
+    if(file.exists(file_path)) {
+      
+      file.remove(file_path)
+      
+    }
     
     # helper function for writing file
-    con <- file(description = con, open = "at")
-    on.exit(close(con))
+    con <- file(description = file_path, open = "at")
+    #on.exit(close(con))
     
     .cat <- function(..., file = con, sep = "", append = TRUE) {
       cat(..., file = file, sep = sep, append = append)
@@ -113,4 +119,6 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
     close(con)
     
   }
+  
+  #on.exit(close(con))
 }

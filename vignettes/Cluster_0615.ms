@@ -1,7 +1,7 @@
 >compound Cluster_0615
 >ionization [M+H]+
 >parentmass 411.1119185
->rt NA
+>rt 399.52847892
 
 >ms1
 411.1119185 2972818.08

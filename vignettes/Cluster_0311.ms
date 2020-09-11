@@ -1,7 +1,7 @@
 >compound Cluster_0311
 >ionization [M+H]+
 >parentmass 289.1205133
->rt NA
+>rt 303.00682278
 
 >ms1
 289.1205133 3153508.35
