@@ -109,7 +109,8 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
         }
       }
     }
+    
+    close(con)
+    
   }
-  
-  close(con)
 }
