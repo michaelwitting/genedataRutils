@@ -112,5 +112,5 @@ spectra <- ms2AddId(cluster, spectra)
 For creation of a <code>.ms</code> file a MS1 spectrum with the isotope pattern and minimum one MS2 spectrum are required. Both have to be stored in a <code>spectra</code> object and contain the metadata columns <code>CLUSTER_ID</code> and <code>RAWFILE</code>. Furthermore, the values in <code>CLUSTER_ID</code> in the MS1 and MS2 data have to match. Lastly, the row annotation of the clusters are required to isolate the averaged precursor m/z for writing of the file. The example code below fetches all the cluster ids from the MS1 spectra data and iterates over it. A <code>.ms</code> file is only written if minimum one MS2 spectrum is available.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-#writeSiriusFile(isoPatternComb, spectra)
+writeSiriusFile(isoPatternComb, spectra)
 ```
