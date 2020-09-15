@@ -42,9 +42,9 @@ reconstructIsoPattern <- function(peaks, cluster) {
   }
   
   # determine length of number to correctly create string at the end
-  clusterLength <- length(gsub("Cluster_", "", row.names(ms_data_cluster)))
+  clusterLength <- nchar(gsub("Cluster_", "", row.names(row_anno_cluster)[1]))
   
-  clusterIds <- row.names(ms_data_cluster)
+  clusterIds <- row.names(row_anno_cluster)
   clusterIds <- as.integer(gsub("Cluster_", "", clusterIds))
   
   all(clusterIds %in% row_anno_peaks$`Cluster [C]`)
@@ -59,7 +59,6 @@ reconstructIsoPattern <- function(peaks, cluster) {
     
     peaks_full_filter <- peaks_full[which(peaks_full$`Cluster [C]` == clusterId),]
     mz <- peaks_full_filter$`m/z`
-    #adduct <- .adduct_conversion(row_anno_cluster$`Adduct [C]`)
     adduct <- .adduct_conversion(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "Adduct [C]"])
     rtime <- as.numeric(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "RT"]) * 60
     
