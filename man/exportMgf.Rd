@@ -17,8 +17,8 @@ exportMgf(splist, con, COM = NULL, TITLE = NULL)
 }
 \description{
 \code{exportMgf} This function allows to export <code>Spectra</code> object to .mgf
-files. If the <code>Spectra</code> object contains the CLUSTER_ID variable
-this is additionally exported as metadata.
+files. If the <code>Spectra</code> object contains the CLUSTER_ID and RAWFILE variables
+this is additionally exported as additional metadata fields.
 }
 \examples{
 

@@ -76,7 +76,9 @@ mgf_files <- dir(system.file("extdata",
                    pattern = "mgf$",
                    full.names = TRUE)
   
-spectra <- Spectra(mgf_files, source = MsBackendMgf())
+spectra <- Spectra(mgf_files,
+                   source = MsBackendMgf(),
+                   backend = MsBackendDataFrame())
 ```
 
 The function <code>ms2AddId()</code> adds the ID of the corresponding MS1 peak as new variable to the <code>Spectra</code> object. It uses the peak boundaries in the row annotations and checks if a <code>precursorMz</code> and <code>rtime</code> are within this boundaries. The new variable is called <code>CLUSTER_ID</code>.

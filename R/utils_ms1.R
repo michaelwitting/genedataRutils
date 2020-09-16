@@ -29,6 +29,7 @@ reconstructIsoPattern <- function(peaks, cluster) {
   # isolate data
   ms_data_cluster <- getMsData(cluster)
   row_anno_cluster <- getRowAnno(cluster)
+  
   ms_data_peaks <- getMsData(peaks)
   row_anno_peaks <- getRowAnno(peaks)
   
@@ -41,10 +42,9 @@ reconstructIsoPattern <- function(peaks, cluster) {
   }
   
   # determine length of number to correctly create string at the end
-  clusterLength <- length(gsub("Cluster_", "", row.names(ms_data_cluster)))
+  clusterLength <- nchar(gsub("Cluster_", "", row.names(row_anno_cluster)[1]))
   
-  
-  clusterIds <- row.names(ms_data_cluster)
+  clusterIds <- row.names(row_anno_cluster)
   clusterIds <- as.integer(gsub("Cluster_", "", clusterIds))
   
   all(clusterIds %in% row_anno_peaks$`Cluster [C]`)
@@ -59,6 +59,8 @@ reconstructIsoPattern <- function(peaks, cluster) {
     
     peaks_full_filter <- peaks_full[which(peaks_full$`Cluster [C]` == clusterId),]
     mz <- peaks_full_filter$`m/z`
+    adduct <- .adduct_conversion(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "Adduct [C]"])
+    rtime <- as.numeric(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "RT"]) * 60
     
     for(sample in samples) {
       
@@ -70,7 +72,9 @@ reconstructIsoPattern <- function(peaks, cluster) {
         mz = mz,
         intensity = int,
         sample = sample,
-        CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId))
+        rtime = rtime,
+        CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)),
+        ADDUCT = adduct
       )
       
       ms1_spectrum$mz <- IRanges::NumericList(ms1_spectrum$mz)
@@ -86,5 +90,38 @@ reconstructIsoPattern <- function(peaks, cluster) {
   }
   
   return(ms1_spectra)
+  
+}
+
+
+.adduct_conversion <- function(x) {
+  
+  if(x == "M+H") {
+    
+    return("[M+H]+")
+    
+  } else if(x == "M+Na") {
+    
+    return("[M+Na]+")
+    
+  } else if(x == "M+NH4") {
+    
+    return("[M+NH4]+")
+    
+  } else if(x == "M-H") {
+    
+    return("[M-H]-")
+    
+  } else if(x == "M+FA") {
+    
+    return("[M+CH2O2-H]-")
+    
+  } else if(x == "M+HAc") {
+    
+    return("[M+C2H4O2-H]-")
+    
+  }
+  
+  NA_character_
   
 }

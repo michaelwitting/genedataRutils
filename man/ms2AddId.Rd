@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_ms2.R
 \name{ms2AddId}
 \alias{ms2AddId}
-\title{Importing Genedata Expressionist for MS .gda files}
+\title{Add MS1 ID to MS2 spectra}
 \usage{
 ms2AddId(x, spectra)
 }
@@ -10,15 +10,16 @@ ms2AddId(x, spectra)
 \item{x}{\code{list} List with data read from .gda file containing grouped
 MS1 cluster}
 
-\item{spectra}{\code{Spectra}MSnbase Spectra object containing MS2 spectra to be
+\item{spectra}{\code{Spectra} Spectra object containing MS2 spectra to be
 matched with the MS1 data}
 }
 \value{
 \code{Spectra} with the additional column CLUSTER_ID.
 }
 \description{
-\code{ms2AddId} Genedata does not allow to export MS1 isotope pattern
-directly. They have to be reconstructed from the Peak and Cluster data
+\code{ms2AddId} allows to add MS1 IDs, e.g. "Cluster_0001" to the respective MS2
+data present in a <code>Spectra</code> object. This allows to link MS1
+and MS2 data.
 }
 \examples{
 

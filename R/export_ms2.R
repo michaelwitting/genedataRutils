@@ -3,8 +3,8 @@
 #' @description
 #'
 #' `exportMgf` This function allows to export <code>Spectra</code> object to .mgf
-#'  files. If the <code>Spectra</code> object contains the CLUSTER_ID variable 
-#'  this is additionally exported as metadata.
+#'  files. If the <code>Spectra</code> object contains the CLUSTER_ID and RAWFILE variables 
+#'  this is additionally exported as additional metadata fields.
 #'
 #' @param splist `Spectra` Spectra object containing spectra to be exported
 #' 
@@ -53,7 +53,7 @@ exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
 }
 
 #' private function for writing content
-#' 
+#' @noRd
 .writeMgfContent <- function(sp, TITLE = NULL, con) {
   
   # custom cat function for writing of content
@@ -97,9 +97,15 @@ exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
     
   }
   
-  if(length(sp$CLUSTER_ID) && !is.na(sp$CLUSTER_ID)) {
+  if("RAWFILE" %in% spectraVariables(sp) && length(sp$RAWFILE) && !is.na(sp$RAWFILE)) {
     
-    .cat("\nCLUSTERID=", sp$CLUSTER_ID)
+    .cat("\nRAWFILE=", sp$RAWFILE)
+    
+  }
+  
+  if("CLUSTER_ID" %in% spectraVariables(sp) && length(sp$CLUSTER_ID) && !is.na(sp$CLUSTER_ID)) {
+    
+    .cat("\nCLUSTER_ID=", sp$CLUSTER_ID)
     
   }
 

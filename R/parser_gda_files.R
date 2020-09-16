@@ -89,8 +89,8 @@ readGda <- function(file) {
       
       # add to row_anno and ms_data
       row_anno <- rbind.data.frame(row_anno,
-                                    rowAnnotations,
-                                    stringsAsFactors = FALSE
+                                   rowAnnotations,
+                                   stringsAsFactors = FALSE
       )
       
       ms_data <- rbind.data.frame(
@@ -124,8 +124,8 @@ readGda <- function(file) {
     }
   }
   
-  row_anno <- type.convert(row_anno)
-  col_anno <- type.convert(col_anno)
+  row_anno <- type.convert(row_anno, as.is = TRUE)
+  col_anno <- type.convert(col_anno, as.is = TRUE)
   ms_data <- type.convert(ms_data)
   
   # return
