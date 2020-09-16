@@ -7,13 +7,11 @@
 writeSiriusFile(ms1_spectra = Spectra(), ms2_spectra = Spectra(), folder = ".")
 }
 \arguments{
-\item{ms2_spectra}{\code{Spectra}}
+\item{ms2_spectra}{\code{Spectra} <code>Spectra</code> containing MS2 data}
 
-\item{ms1_spectrum}{\code{Spectra}}
+\item{folder}{\code{character} path to folder where .ms files shall be stored}
 
-\item{adduct}{\code{character}}
-
-\item{con}{\code{character}}
+\item{ms1_spectrum}{\code{Spectra} <code>Spectra</code> containing isotope pattern}
 }
 \description{
 \code{writeSiriusFile} Genedata does not allow to export MS1 isotope pattern

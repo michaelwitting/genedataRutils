@@ -5,10 +5,9 @@
 #' `writeSiriusFile` Genedata does not allow to export MS1 isotope pattern
 #'      directly. They have to be reconstructed from the Peak and Cluster data
 #'
-#' @param ms1_spectrum `Spectra`
-#' @param ms2_spectra `Spectra`
-#' @param adduct `character`
-#' @param con `character`
+#' @param ms1_spectrum `Spectra` <code>Spectra</code> containing isotope pattern
+#' @param ms2_spectra `Spectra` <code>Spectra</code> containing MS2 data
+#' @param folder `character` path to folder where .ms files shall be stored
 #'
 #' @author Michael Witting
 #' 

@@ -97,8 +97,8 @@ library(MsBackendMgf)
 # load MS2 data
 mgf_files <- dir(system.file("extdata",
                                package = "genedataRutils"),
-                   pattern = "mgf$",
-                   full.names = TRUE)
+                 pattern = "mgf$",
+                 full.names = TRUE)
   
 spectra <- Spectra(mgf_files,
                    source = MsBackendMgf(),

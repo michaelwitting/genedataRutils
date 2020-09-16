@@ -1,40 +1,36 @@
-#' @title Reconstructing Isotope Pattern from MS1 data
+#' @title Writing template for Metabolights sample file
 #'
 #' @description
 #'
-#' `reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
-#'      directly. They have to be reconstructed from the Peak and Cluster data
+#' `createMtblsSampleFile` Exports data read from a .gda file to a Metabolights 
+#'    sample file. A study ID is required to generate consistent files. To be 
+#'    used this function requires the following column annotations to be present:
+#'    "Source [C]", "Sample [C]", "Assay [C]", "File [C]", "Sample Type [C]"
 #'
-#' @param peaks `list` List with data read from .gda file containing individual 
-#'     MS1 peaks
-#' @param cluster `list`List with data read from .gda file containing grouped 
-#'     MS1 cluster
-#'
-#' @return `Spectra` Returns a Spectra object with the reconstructed MS1 isotope
-#'     pattern
-#'
+#' @param x `list` List with data read from .gda file
+#' @param study_id `character` Study ID from Metabolights or place holder 
+#'     (default is MTBLSXXXX)
+#' @param study_factors `character` Potentially present study factors
+#' @param metadata `list` Additional metadata, such a organism etc.
+#'#'
 #' @author Michael Witting
 #' 
-#' @importFrom S4Vectors DataFrame
-#' @importFrom IRanges NumericList
-#' @import Spectra
-#'
 #' @export
 #'
 #' @examples
 #'
 #'
-create_sample_file <- function(x, study_id, study_factors = NA,
-                               metadata = list("organism_characteristics" = NA,
-                                               "organism_source_ref" = NA,
-                                               "organism_term_access" = NA,
-                                               "organism_part_characteristics" = NA,
-                                               "organism_part_source_ref" = NA,
-                                               "organism_part_term_access" = NA,
-                                               "variant_characteristics" = NA,
-                                               "variant_source_ref" = NA,
-                                               "variant_term_access" = NA,
-                                               "protocol_ref" = NA)) {
+createMtblsSampleFile <- function(x, study_id = "MTBLSXXXX", study_factors = NA,
+                                  metadata = list("organism_characteristics" = NA,
+                                                  "organism_source_ref" = NA,
+                                                  "organism_term_access" = NA,
+                                                  "organism_part_characteristics" = NA,
+                                                  "organism_part_source_ref" = NA,
+                                                  "organism_part_term_access" = NA,
+                                                  "variant_characteristics" = NA,
+                                                  "variant_source_ref" = NA,
+                                                  "variant_term_access" = NA,
+                                                  "protocol_ref" = NA)) {
   
   # sanity checks
   if(!length(x) == 3) {
@@ -133,7 +129,8 @@ create_sample_file <- function(x, study_id, study_factors = NA,
   
 }
 
-# helper function
+#' helper function
+#' @noRd
 .write_sample_file <- function(sample_df, header, file) {
   
   cat(paste(header, collapse = "\t"), '\n', file = file)
@@ -141,63 +138,53 @@ create_sample_file <- function(x, study_id, study_factors = NA,
   
 }
 
-#' @title Reconstructing Isotope Pattern from MS1 data
-#'
-#' @description
-#'
-#' `reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
-#'      directly. They have to be reconstructed from the Peak and Cluster data
-#'
-#' @param peaks `list` List with data read from .gda file containing individual 
-#'     MS1 peaks
-#' @param cluster `list`List with data read from .gda file containing grouped 
-#'     MS1 cluster
-#'
-#' @return `Spectra` Returns a Spectra object with the reconstructed MS1 isotope
-#'     pattern
-#'
-#' @author Michael Witting
-#' 
-#' @importFrom S4Vectors DataFrame
-#' @importFrom IRanges NumericList
-#' @import Spectra
-#'
-#' @export
-#'
-#' @examples
-#'
-#'
-create_assay_file <- function(x, study_id) {
-  
-}
+#' #' @title Writing template for Metabolights sample file
+#' #'
+#' #' @description
+#' #'
+#' #' `createMtblsSampleFile` Exports data read from a .gda file to a Metabolights 
+#' #'    sample file. A study ID is required to generate consistent files. To be 
+#' #'    used this function requires the following column annotations to be present:
+#' #'    "Source [C]", "Sample [C]", "Assay [C]", "File [C]", "Sample Type [C]"
+#' #'
+#' #' @param x `list` List with data read from .gda file
+#' #' @param study_id `character` Study ID from Metabolights or place holder 
+#' #'     (default is MTBLSXXXX)
+#' #' @param study_factors `character` Potentially present study factors
+#' #' @param metadata `list` Additional metadata, such a organism etc.
+#' #'#'
+#' #' @author Michael Witting
+#' #' 
+#' #' @export
+#' #'
+#' #' @examples
+#' #'
+#' #'
+#' create_assay_file <- function(x, study_id) {
+#'   
+#' }
 
-#' @title Reconstructing Isotope Pattern from MS1 data
+#' @title Writing template for Metabolights metabolite file
 #'
 #' @description
 #'
-#' `reconstructIsoPattern` Genedata does not allow to export MS1 isotope pattern
-#'      directly. They have to be reconstructed from the Peak and Cluster data
+#' `createMtblsMetaboliteFile` Exports data read from a .gda file to a Metabolights 
+#'    MAF file. A study ID is required to generate consistent files. To be 
+#'    used this function requires the following column annotations to be present:
+#'    "Source [C]", "Sample [C]", "Assay [C]", "File [C]", "Sample Type [C]"
 #'
-#' @param peaks `list` List with data read from .gda file containing individual 
-#'     MS1 peaks
-#' @param cluster `list`List with data read from .gda file containing grouped 
-#'     MS1 cluster
-#'
-#' @return `Spectra` Returns a Spectra object with the reconstructed MS1 isotope
-#'     pattern
+#' @param x `list` List with data read from .gda file
+#' @param study_id `character` Study ID from Metabolights or place holder 
+#'     (default is MTBLSXXXX)
 #'
 #' @author Michael Witting
 #' 
-#' @importFrom S4Vectors DataFrame
-#' @importFrom IRanges NumericList
-#' @import Spectra
-#'
 #' @export
 #'
 #' @examples
 #'
 #'
-create_metabolite_files <- function(x, study_id) {
+createMtblsMetaboliteFile <- function(x, study_id) {
   
   # sanity checks
   if(!length(x) == 3) {

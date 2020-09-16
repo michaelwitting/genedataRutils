@@ -1,13 +1,14 @@
-#' @title Importing Genedata Expressionist for MS .gda files
+#' @title Add MS1 ID to MS2 spectra
 #'
 #' @description
 #'
-#' `ms2AddId` Genedata does not allow to export MS1 isotope pattern
-#'      directly. They have to be reconstructed from the Peak and Cluster data
+#' `ms2AddId` allows to add MS1 IDs, e.g. "Cluster_0001" to the respective MS2 
+#'      data present in a <code>Spectra</code> object. This allows to link MS1 
+#'      and MS2 data.
 #'
 #' @param x `list` List with data read from .gda file containing grouped 
 #'     MS1 cluster
-#' @param spectra `Spectra`MSnbase Spectra object containing MS2 spectra to be
+#' @param spectra `Spectra` Spectra object containing MS2 spectra to be
 #'     matched with the MS1 data
 #'
 #' @return `Spectra` with the additional column CLUSTER_ID.
@@ -26,7 +27,7 @@ ms2AddId <- function(x, spectra) {
   row_anno <- getRowAnno(x)
 
   # add cluster ID
-  spectra$CLUSTER_ID <- unlist(lapply(spectra, function(x, df) {
+  spectra$CLUSTER_ID <- unlist(spectrapply(spectra, function(x, df) {
     
     id <- row.names(df[which(df$`RT Min` * 60 < x$rtime &
                                df$`RT Max`* 60 > x$rtime &
@@ -42,7 +43,18 @@ ms2AddId <- function(x, spectra) {
   
 }
 
-#'
+#' @title Correction of retention time in Spectra objects
+#' 
+#' @description 
+#' 
+#' `correctRtime` allows to correct the retention time in <code>Spectra</code> 
+#'     objects. It uses the RT from the MS1 data supplied from a .gda read data. 
+#'     <code>Spectra</code> can be of either MS1 or MS2 level
+#'     
+#' @param x `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster
+#' @param spectra `Spectra` Spectra object containing MS1 or MS2 spectra for 
+#'     which the RT shall be corrected
 #'
 #'
 #' @export
@@ -70,7 +82,15 @@ correctRtime <- function(x, spectra) {
   
 }
 
-#'
+#' @title  Compare against a in-house MS2 library
+#' 
+#' @description 
+#' 
+#' `compareSpectraInHouse` compares measured spectra stored in a <code>Spectra
+#'     </code> object against a library also stored in a <code>Spectra</code> 
+#'     object. Difference to `compareSpectraExternal` is that RT is used for 
+#'     additional filtering.
+#' 
 #' @param x `Spectra` Spectra for which library matching shall be performed
 #' @param librarySpectra `Spectra` Spectra object containing library
 #' @param treshold `numeric` minimum spectral similarity, default is 0.7 for ndotproduct
@@ -78,8 +98,13 @@ correctRtime <- function(x, spectra) {
 #' @param ppm `numeric` relative tolerance for matching of peaks
 #' @param rtOffset `numeric` known offset between measurement and library RT
 #' @param rtimeTolerance `numeric` tolerance for retention time search
+#' 
+#' @return `data.frame` with the results
 #'
 #' @export
+#' 
+#' @examples 
+#' 
 compareSpectraInHouse <- function(x, librarySpectra, treshold = 0.7,
                                   tolerance = 0, ppm = 0,
                                   rtOffset = 0, 
@@ -131,14 +156,26 @@ compareSpectraInHouse <- function(x, librarySpectra, treshold = 0.7,
   
 }
 
-#'
+#' @title  Compare against a MS2 library
+#' 
+#' @description 
+#' 
+#' `compareSpectraExternal` compares measured spectra stored in a <code>Spectra
+#'     </code> object against a library also stored in a <code>Spectra</code> 
+#'     object. Difference to `compareSpectraInHouse` is that RT is ignored.
+#' 
 #' @param x `Spectra` Spectra for which library matching shall be performed
 #' @param librarySpectra `Spectra` Spectra object containing library
 #' @param treshold `numeric` minimum spectral similarity, default is 0.7 for ndotproduct
 #' @param tolerance `numeric` absolute tolerance for matching of peaks
 #' @param ppm `numeric` relative tolerance for matching of peaks
+#' 
+#' @return `data.frame` with the results
 #'
 #' @export
+#' 
+#' @examples 
+#' 
 compareSpectraExternal <- function(x, librarySpectra, treshold = 0.7,
                                    tolerance = 0, ppm = 0, ...) {
   
