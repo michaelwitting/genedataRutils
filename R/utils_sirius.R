@@ -93,7 +93,7 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
                collapse = "\n"))
     
     
-    if(length(ms2_spectra) > 0) {
+    if(length(ms2_spectra_filter) > 0) {
       # iterate over ms2 spectra
       for(i in 1:length(ms2_spectra_filter)) {
         
