@@ -27,7 +27,7 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
     
   }
   
-  if(length(ms2_spectra) > 0 & !"CLUSTER_ID" %in% spectraVariables(ms2_spectra)) {
+  if(length(ms2_spectra) > 0 && !"CLUSTER_ID" %in% spectraVariables(ms2_spectra)) {
     
     stop("No column CLUSTER_ID found in MS2 spectra. Perform ms2AddId() first")
     
