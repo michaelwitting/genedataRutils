@@ -69,17 +69,27 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
     # [M+Na]+
     # [M+ADDUCT]+
     # [M+ADDUCT]-
-    if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 0) {
+    # if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 0) {
+    #   
+    #   adduct <- "[M+ADDUCT]-"
+    #   
+    # } else if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 1) {
+    #   
+    #   adduct <- "[M+ADDUCT]+"
+    #   
+    # } else {
+    #   
+    #   adduct <- ms1_spectrum$ADDUCT
+    #   
+    # }
+    
+    if(!is.null(ms1_spectrum$ADDUCT) && !is.na(ms1_spectrum$ADDUCT)) {
       
-      adduct <- "[M+ADDUCT]-"
-      
-    } else if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 1) {
-      
-      adduct <- "[M+ADDUCT]+"
+      adduct <- ms1_spectrum$ADDUCT
       
     } else {
       
-      adduct <- ms1_spectrum$ADDUCT
+      adduct <- ""
       
     }
     
