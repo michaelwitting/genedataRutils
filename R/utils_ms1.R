@@ -65,6 +65,7 @@ reconstructIsoPattern <- function(peaks, cluster) {
     for(sample in samples) {
       
       int <- peaks_full_filter[,sample]
+      int[is.na(int)] <- 0
       
       # create Spectra object
       ms1_spectrum <- DataFrame(
