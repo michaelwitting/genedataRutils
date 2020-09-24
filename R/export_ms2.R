@@ -24,6 +24,8 @@
 #' 
 exportMgf <- function(splist, con, COM = NULL, TITLE = NULL) {
   
+  .Deprecated("Use the export() function from the Spectra package.")
+  
   if (class(con) == "character" && file.exists(con)) {
     
     message("Overwriting ", con, "!")
