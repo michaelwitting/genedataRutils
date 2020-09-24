@@ -64,7 +64,11 @@ reconstructIsoPattern <- function(peaks, cluster) {
     
     for(sample in samples) {
       
-      int <- peaks_full_filter[,sample]
+      int <- as.vector(peaks_full_filter[,sample])
+      
+      print(int)
+      
+      int[is.na(int)] <- 0
       
       # create Spectra object
       ms1_spectrum <- DataFrame(
@@ -123,5 +127,62 @@ reconstructIsoPattern <- function(peaks, cluster) {
   }
   
   NA_character_
+  
+}
+
+#' @title Fill with empty MS2 spectra
+#' 
+#' @description 
+#' 
+#' `fillMs1Spectra` adds empty spectra for cluster that have no MS2 data
+#'     
+#' @param x `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster
+#' @param spectra `Spectra` Spectra object containing MS1 spectra for 
+#'     which the RT shall be corrected
+#'
+#'
+#' @export
+#' 
+fillMs1Spectra <- function(x, spectra) {
+  
+  # check if spectra have CLUSTER_ID
+  if(!"CLUSTER_ID" %in% spectraVariables(spectra)) {
+    
+    stop("No column CLUSTER_ID found in MS1 spectra.")
+    
+  }
+  
+  row_anno <- getRowAnno(x)
+  
+  row_anno_cluster <- sort(rownames(row_anno))
+  spectra_cluster <- sort(unique(spectra$CLUSTER_ID))
+  
+  diff_cluster <- setdiff(row_anno_cluster, spectra_cluster)
+  
+  for(diff in diff_cluster) {
+    
+    # get information
+    precusorMz <- row_anno[diff, "m/z"]
+    rtime <- row_anno[diff, "RT"] * 600
+    
+    spd <- DataFrame(
+      msLevel = c(2L),
+      polarity = c(NA_integer_),
+      precursorMz = precursorMz,
+      rtime = rtime,
+      CLUSTER_ID = diff)
+    
+    ## Assign m/z and intensity values.
+    spd$mz <- list(c())
+    spd$intensity <- list(c())
+    
+    sps <- Spectra(spd)
+    
+    spectra <- c(spectra, sps)
+    
+  }
+  
+  spectra
   
 }

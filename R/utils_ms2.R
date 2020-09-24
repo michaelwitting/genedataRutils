@@ -82,186 +82,59 @@ correctRtime <- function(x, spectra) {
   
 }
 
-#' @title  Compare against a in-house MS2 library
+#' @title Fill with empty MS2 spectra
 #' 
 #' @description 
 #' 
-#' `compareSpectraInHouse` compares measured spectra stored in a <code>Spectra
-#'     </code> object against a library also stored in a <code>Spectra</code> 
-#'     object. Difference to `compareSpectraExternal` is that RT is used for 
-#'     additional filtering.
-#' 
-#' @param x `Spectra` Spectra for which library matching shall be performed
-#' @param librarySpectra `Spectra` Spectra object containing library
-#' @param treshold `numeric` minimum spectral similarity, default is 0.7 for ndotproduct
-#' @param tolerance `numeric` absolute tolerance for matching of peaks
-#' @param ppm `numeric` relative tolerance for matching of peaks
-#' @param rtOffset `numeric` known offset between measurement and library RT
-#' @param rtimeTolerance `numeric` tolerance for retention time search
-#' 
-#' @return `data.frame` with the results
+#' `fillMs2Spectra` adds empty spectra for cluster that have no MS2 data
+#'     
+#' @param x `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster
+#' @param spectra `Spectra` Spectra object containing MS2 spectra for 
+#'     which the RT shall be corrected
+#'
 #'
 #' @export
 #' 
-#' @examples 
-#' 
-compareSpectraInHouse <- function(x, librarySpectra, treshold = 0.7,
-                                  tolerance = 0, ppm = 0,
-                                  rtOffset = 0, 
-                                  rtimeTolerance = 10, ...) {
+fillMs2Spectra <- function(x, spectra) {
   
-  # create empty data frame for results
-  results <- data.frame()
-  
-  for(i in 1:length(x)) {
+  # check if spectra have CLUSTER_ID
+  if(!"CLUSTER_ID" %in% spectraVariables(spectra)) {
     
-    # get information on precursor in data
-    mz <- x[i]$precursorMz
-    rtime <- x[i]$rtime
-    clusterid <- x[i]$CLUSTER_ID
-    
-    # filter spectra according to precursor information
-    # first based on precursorMz
-    librarySpectra_filter <- librarySpectra[which(
-      abs(librarySpectra$precursorMz - mz) < tolerance + ppm(mz, ppm))]
-    
-    # second on rtime
-    librarySpectra_filter <- librarySpectra_filter[which(
-      abs(librarySpectra_filter$rtime + rtOffset - rtime) < rtimeTolerance)]
-    
-    # get results and format
-    if(length(librarySpectra_filter)) {
-      
-      res <- compareSpectra(x[i],
-                            librarySpectra_filter,
-                            tolerance = tolerance,
-                            ppm = ppm,
-                            ...)
-      
-      res_df <- .isolate_metadata(librarySpectra_filter[res > treshold])
-      
-      if(nrow(res_df) > 0) {
-        
-        results <- rbind.data.frame(results ,cbind.data.frame(data.frame(CLUSTER_ID = rep(clusterid, nrow(res_df)),
-                                                                         precursorMz = rep(mz, nrow(res_df)),
-                                                                         rtime = rep(rtime, nrow(res_df)),
-                                                                         similarity = res[res > treshold]),
-                                                              res_df))
-
-      }
-    }
-  }
-
-  results
-  
-}
-
-#' @title  Compare against a MS2 library
-#' 
-#' @description 
-#' 
-#' `compareSpectraExternal` compares measured spectra stored in a <code>Spectra
-#'     </code> object against a library also stored in a <code>Spectra</code> 
-#'     object. Difference to `compareSpectraInHouse` is that RT is ignored.
-#' 
-#' @param x `Spectra` Spectra for which library matching shall be performed
-#' @param librarySpectra `Spectra` Spectra object containing library
-#' @param treshold `numeric` minimum spectral similarity, default is 0.7 for ndotproduct
-#' @param tolerance `numeric` absolute tolerance for matching of peaks
-#' @param ppm `numeric` relative tolerance for matching of peaks
-#' 
-#' @return `data.frame` with the results
-#'
-#' @export
-#' 
-#' @examples 
-#' 
-compareSpectraExternal <- function(x, librarySpectra, treshold = 0.7,
-                                   tolerance = 0, ppm = 0, ...) {
-  
-  # create empty data frame for results
-  results <- data.frame()
-  
-  for(i in 1:length(x)) {
-    
-    # get information on precursor in data
-    mz <- x[i]$precursorMz
-    rtime <- x[i]$rtime
-    clusterid <- x[i]$CLUSTER_ID
-    
-    # filter spectra according to precursor information
-    librarySpectra_filter <- librarySpectra[which(
-      abs(librarySpectra$precursorMz - mz) < tolerance + ppm(mz, ppm))]
-    
-    # get results and format
-    if(length(librarySpectra_filter)) {
-      
-      res <- compareSpectra(x[i],
-                            librarySpectra_filter,
-                            tolerance = tolerance,
-                            ppm = ppm,
-                            ...)
-      
-      res_df <- .isolate_metadata(librarySpectra_filter[res > treshold])
-      
-      if(nrow(res_df) > 0) {
-        
-        results <- rbind.data.frame(results ,cbind.data.frame(data.frame(CLUSTER_ID = rep(clusterid, nrow(res_df)),
-                                                                         precursorMz = rep(mz, nrow(res_df)),
-                                                                         rtime = rep(rtime, nrow(res_df)),
-                                                                         similarity = res[res > treshold]),
-                                                              res_df))
-        
-      }
-    }
-  }
-  
-  results
-  
-}
-
-#'
-#'
-#' helper function to isolate metadata from different backends
-.isolate_metadata <- function(x) {
-  
-  if(class(x@backend) == "MsBackendMassbank") {
-    
-    lib_id <- x$accession
-    lib_names <- unlist(lapply(x$name, function(x) {paste0(x, collapse = ";")}))
-    lib_formula <- x$formula
-    lib_precursorMz <- x$precursorMz
-    lib_rtime <- x$rtime
-    lib_adduct <- x$focus_precursor_type
-    lib_inchikey <- x$link_inchikey
-    lib_inchi <- x$iupac
-    lib_smiles <- x$smiles
-    
-    
-  } else if(class(x@backend) == "MsBackendMsp") {
-    
-    lib_id <- x$accession
-    lib_names <- unlist(lapply(x$name, function(x) {paste0(x, collapse = ";")}))
-    lib_formula <- x$formula
-    lib_precursorMz <- x$precursorMz
-    lib_rtime <- x$rtime
-    lib_adduct <- x$focus_precursor_type
-    lib_inchikey <- x$link_inchikey
-    lib_inchi <- x$iupac
-    lib_smiles <- x$smiles
-    
-  } else {
+    stop("No column CLUSTER_ID found in MS2 spectra.")
     
   }
   
-  data.frame(lib_id = lib_id,
-             lib_names = lib_names,
-             lib_formula = lib_formula,
-             lib_libMz = lib_precursorMz,
-             lib_libRtime = lib_rtime,
-             lib_adduct = lib_adduct,
-             lib_inchikey = lib_inchikey,
-             lib_inchi = lib_inchi,
-             lib_smiles = lib_smiles)
+  row_anno <- getRowAnno(x)
+  
+  row_anno_cluster <- sort(rownames(row_anno))
+  spectra_cluster <- sort(unique(spectra$CLUSTER_ID))
+  
+  diff_cluster <- setdiff(row_anno_cluster, spectra_cluster)
+  
+  for(diff in diff_cluster) {
+    
+    # get information
+    precusorMz <- row_anno[diff, "m/z"]
+    rtime <- row_anno[diff, "RT"] * 600
+    
+    spd <- DataFrame(
+      msLevel = c(2L),
+      polarity = c(NA_integer_),
+      precursorMz = precursorMz,
+      rtime = rtime,
+      CLUSTER_ID = diff)
+    
+    ## Assign m/z and intensity values.
+    spd$mz <- list(c())
+    spd$intensity <- list(c())
+    
+    sps <- Spectra(spd)
+    
+    spectra <- c(spectra, sps)
+    
+  }
+  
+  spectra
   
 }

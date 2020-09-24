@@ -21,13 +21,13 @@
 writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), folder = ".") {
   
   # some sanity checks here
-  if(!"CLUSTER_ID" %in% spectraVariables(ms1_spectra)) {
+  if(!"CLUSTER_ID" %in% Spectra::spectraVariables(ms1_spectra)) {
     
     stop("No column CLUSTER_ID found in MS1 spectra.")
     
   }
   
-  if(length(ms2_spectra) > 0 & !"CLUSTER_ID" %in% spectraVariables(ms2_spectra)) {
+  if(length(ms2_spectra) > 0 && !"CLUSTER_ID" %in% Spectra::spectraVariables(ms2_spectra)) {
     
     stop("No column CLUSTER_ID found in MS2 spectra. Perform ms2AddId() first")
     
@@ -69,17 +69,27 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
     # [M+Na]+
     # [M+ADDUCT]+
     # [M+ADDUCT]-
-    if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 0) {
+    # if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 0) {
+    #   
+    #   adduct <- "[M+ADDUCT]-"
+    #   
+    # } else if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 1) {
+    #   
+    #   adduct <- "[M+ADDUCT]+"
+    #   
+    # } else {
+    #   
+    #   adduct <- ms1_spectrum$ADDUCT
+    #   
+    # }
+    
+    if(!is.null(ms1_spectrum$ADDUCT) && !is.na(ms1_spectrum$ADDUCT)) {
       
-      adduct <- "[M+ADDUCT]-"
-      
-    } else if(is.na(ms1_spectrum$ADDUCT) && ms1_spectrum$polarity == 1) {
-      
-      adduct <- "[M+ADDUCT]+"
+      adduct <- ms1_spectrum$ADDUCT
       
     } else {
       
-      adduct <- ms1_spectrum$ADDUCT
+      adduct <- ""
       
     }
     
@@ -93,7 +103,7 @@ writeSiriusFile <- function(ms1_spectra = Spectra(), ms2_spectra = Spectra(), fo
                collapse = "\n"))
     
     
-    if(length(ms2_spectra) > 0) {
+    if(length(ms2_spectra_filter) > 0) {
       # iterate over ms2 spectra
       for(i in 1:length(ms2_spectra_filter)) {
         
