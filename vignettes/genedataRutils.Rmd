@@ -94,4 +94,27 @@ This new variable can be used to subset the <code>Spectra</code> object.
 ```{r}
 spectra[which(spectra$CLUSTER_ID == "Cluster_0615")]
 ```
+## Optional: Library matching
+
+```{r}
+library(MsBackendMassbank)
+
+# load MS2 data
+massbank_files <- dir(system.file("extdata",
+                                  package = "genedataRutils"),
+                      pattern = ".txt$",
+                      full.names = TRUE)
+  
+ms2library <- Spectra(massbank_files,
+                      source = MsBackendMassbank(),
+                      backend = MsBackendDataFrame())
+
+# clean up MS2 spectra a bit
+my_filter <- function(x) {
+    x > max(x, na.rm = TRUE) / 100
+}
+spectra_filtered <- filterIntensity(spectra, intensity = my_filter)
+
+lib_results <- compareSpectraLibrary(spectra_filtered, ms2library, tolerance = 0.005)
+```
 
