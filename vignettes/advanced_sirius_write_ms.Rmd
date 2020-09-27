@@ -68,11 +68,7 @@ head(isoPattern)
 ```
 
 ```{r}
-for(i in seq_along(isoPattern)) {
-  
-  plot(isoPattern[i]$mz[[1]], isoPattern[i]$intensity[[1]], type = "h", main = isoPattern[i]$CLUSTER_ID)
-  
-}
+plotSpectra(isoPattern, main = isoPattern$CLUSTER_ID)
 ```
 
 Spectra can be combined if required
@@ -80,11 +76,7 @@ Spectra can be combined if required
 ```{r}
 isoPatternComb <- combineSpectra(isoPattern, f = isoPattern$CLUSTER_ID, intensityFun = base::sum, mzd = 0.005)
 
-for(i in seq_along(isoPatternComb)) {
-  
-  plot(isoPatternComb[i]$mz[[1]], isoPatternComb[i]$intensity[[1]], type = "h", main = isoPatternComb[i]$CLUSTER_ID)
-  
-}
+plotSpectra(isoPatternComb, main = isoPatternComb$CLUSTER_ID)
 ```
 
 ## Read and prepare MS2 data

@@ -96,6 +96,23 @@ spectra[which(spectra$CLUSTER_ID == "Cluster_0615")]
 ```
 ## Optional: Library matching
 
+### MS1
+```{r}
+ms1library_file <- dir(system.file("extdata",
+                                  package = "genedataRutils"),
+                      pattern = ".tsv$",
+                      full.names = TRUE)
+
+ms1library <- read.table(ms1library_file, sep = "\t", header = TRUE, comment.char = "")
+
+adducts <- c("[M+H]+")
+
+annotateMz(gda_result, ms1library, tolerance = 0.005)
+```
+
+
+### MS2
+
 ```{r}
 library(MsBackendMassbank)
 
