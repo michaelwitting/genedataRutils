@@ -115,13 +115,13 @@ fillMs2Spectra <- function(x, spectra) {
   for(diff in diff_cluster) {
     
     # get information
-    precusorMz <- row_anno[diff, "m/z"]
+    precursorMz <- row_anno[diff, "m/z"]
     rtime <- row_anno[diff, "RT"] * 600
     
     spd <- DataFrame(
       msLevel = c(2L),
       polarity = c(NA_integer_),
-      precursorMz = precursorMz,
+      precursorMz = as.numeric(precursorMz),
       rtime = rtime,
       CLUSTER_ID = diff)
     
