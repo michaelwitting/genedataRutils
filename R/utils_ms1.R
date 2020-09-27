@@ -54,6 +54,7 @@ reconstructIsoPattern <- function(peaks, cluster) {
   }
   
   # prepare data
+  ms_data_peaks[is.na(ms_data_peaks)] = 0
   peaks_full <- merge(ms_data_peaks, row_anno_peaks,by = "row.names")
   samples <- colnames(ms_data_peaks)
   
