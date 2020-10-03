@@ -2,17 +2,41 @@
 % Please edit documentation in R/utils_metid.R
 \name{annotateMz}
 \alias{annotateMz}
-\title{function to perform MS1 annotation}
+\title{Annotate MS1 data}
 \usage{
 annotateMz(
   x,
   ms1Library,
   tolerance = 0,
   ppm = 0,
-  rtimeTolerance = 10,
-  matchAdduct = FALSE
+  rtimeTolerance = Inf,
+  matchAdduct = FALSE,
+  adducts = c("[M+H]+")
 )
 }
+\arguments{
+\item{x}{\code{list} List with data read from .gda file containing grouped
+MS1 cluster}
+
+\item{tolerance}{\code{numeric} absolute tolerance for matching of peaks}
+
+\item{ppm}{\code{numeric} relative tolerance for matching of peaks}
+
+\item{adducts}{\code{character} Vector with adducts to be used. Names of adducts
+between \code{ms1library} and \code{adducts} have to match!}
+
+\item{ms1library}{\code{data.frame} Data frame containing MS1 library, minimal
+columns are name, adduct and mz}
+
+\item{matchAdducts}{\code{boolean} Indicates if MS1 library shall be first
+filtered based on the values in \code{adducts}}
+}
+\value{
+\code{data.frame} with the results
+}
 \description{
-function to perform MS1 annotation
+\code{annotateMz} compares measured m/z values with a MS1 library
+}
+\examples{
+
 }

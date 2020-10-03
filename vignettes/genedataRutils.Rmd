@@ -94,4 +94,60 @@ This new variable can be used to subset the <code>Spectra</code> object.
 ```{r}
 spectra[which(spectra$CLUSTER_ID == "Cluster_0615")]
 ```
+## Optional: Library matching
+
+<code>genedataRutils</code> enables the annotation on the MS1 and MS2 level.
+
+### MS1
+
+MS1 compound libraries have to be supplied as <code>data.frame</code>. The minimal information in this <code>data.frame</code> are the following colummns: <code>name</name>, <code>adduct</code> and <code>mz</code>.
+
+
+```{r ms1matching}
+ms1library_file <- dir(system.file("extdata",
+                                  package = "genedataRutils"),
+                      pattern = ".tsv$",
+                      full.names = TRUE)
+
+ms1library <- read.table(ms1library_file, sep = "\t", header = TRUE, comment.char = "")
+
+adducts <- c("[M+H]+")
+
+annotateMz(gda_result,
+           ms1library,
+           tolerance = 0.005,
+           adducts = adducts)
+```
+
+### MS2
+
+Beyond MS1 matching, library searching for MS2 is possible. MS2 libraries have to be present as <code>Spectra</code>. Comparison is based on <code>compareSpectra</code> and returns the forward and reverse dotproduct. The <code>Spectra</code> object needs to contain the following columns: <code>accession</code>, <code>name</code>, <code>exactmass</code>, <code>adduct</code>, <code>precursorMz</code>. A <code>data.frame</code> with all the results is returned. In the example below before matching peaks below 1% of the based peak removed to improve results.
+
+```{r ms2matching}
+library(MsBackendMassbank)
+
+# load MS2 data
+massbank_files <- dir(system.file("extdata",
+                                  package = "genedataRutils"),
+                      pattern = ".txt$",
+                      full.names = TRUE)
+  
+ms2library <- Spectra(massbank_files,
+                      source = MsBackendMassbank(),
+                      backend = MsBackendDataFrame())
+
+# clean up MS2 spectra a bit
+my_filter <- function(x) {
+    x > max(x, na.rm = TRUE) / 100
+}
+
+# filter peaks below 1% of base peak
+spectra_filtered <- filterIntensity(spectra, intensity = my_filter)
+
+lib_results <- compareSpectraLibrary(spectra_filtered,
+                                     ms2library,
+                                     tolerance = 0.005)
+
+head(lib_results)
+```
 

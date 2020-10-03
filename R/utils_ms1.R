@@ -47,49 +47,67 @@ reconstructIsoPattern <- function(peaks, cluster) {
   clusterIds <- row.names(row_anno_cluster)
   clusterIds <- as.integer(gsub("Cluster_", "", clusterIds))
   
-  all(clusterIds %in% row_anno_peaks$`Cluster [C]`)
+  if(!all(clusterIds %in% row_anno_peaks$`Cluster [C]`)) {
+    
+    warning("Not all Cluster IDs in peak table found")
+    
+  }
   
-  peaks_full <- merge(row_anno_peaks, ms_data_peaks, by = "row.names")
-  
+  # prepare data
+  ms_data_peaks[is.na(ms_data_peaks)] = 0
+  peaks_full <- merge(ms_data_peaks, row_anno_peaks,by = "row.names")
   samples <- colnames(ms_data_peaks)
   
+  # creacte empty Spectra object to add data
   ms1_spectra <- Spectra()
   
   for(clusterId in clusterIds) {
     
+    # get data relevant for cluster
     peaks_full_filter <- peaks_full[which(peaks_full$`Cluster [C]` == clusterId),]
     mz <- peaks_full_filter$`m/z`
     adduct <- .adduct_conversion(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "Adduct [C]"])
     rtime <- as.numeric(row_anno_cluster[paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), "RT"]) * 60
     
-    for(sample in samples) {
-      
-      int <- as.vector(peaks_full_filter[,sample])
-      
-      print(int)
-      
-      int[is.na(int)] <- 0
-      
-      # create Spectra object
-      ms1_spectrum <- DataFrame(
-        msLevel = 1L,
-        mz = mz,
-        intensity = int,
-        sample = sample,
-        rtime = rtime,
-        CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)),
-        ADDUCT = adduct
-      )
-      
-      ms1_spectrum$mz <- IRanges::NumericList(ms1_spectrum$mz)
-      ms1_spectrum$intensity <- IRanges::NumericList(ms1_spectrum$intensity)
-      
-      ms1_spectrum <- Spectra(ms1_spectrum)
-      
-      ms1_spectra <- c(ms1_spectra, ms1_spectrum)
-      
-      
-    }
+    spd <- DataFrame(
+      msLevel = rep(1L, length(samples)),
+      sample = samples,
+      rtime = rep(rtime, length(samples)),
+      CLUSTER_ID = rep(paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)), length(samples)),
+      ADDUCT = rep(adduct, length(samples))
+    )
+    
+    spd$mz <- lapply(vector(mode = "list", length = length(samples)), function(x) mz)
+    spd$intensity <- unname(as.list(peaks_full_filter[,2:(1+length(samples))]))
+    
+    ms1_spectra <- c(ms1_spectra, Spectra(spd))
+    
+    # for(sample in samples) {
+    #   
+    #   int <- as.vector(peaks_full_filter[,sample])
+    # 
+    #   int[is.na(int)] <- 0
+    #   
+    #   # create Spectra object
+    #   ms1_spectrum <- DataFrame(
+    #     msLevel = 1L,
+    #     mz = mz,
+    #     intensity = int,
+    #     sample = sample,
+    #     rtime = rtime,
+    #     CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)),
+    #     ADDUCT = adduct
+    #   )
+    #   
+    #   ms1_spectrum$mz <- IRanges::NumericList(ms1_spectrum$mz)
+    #   ms1_spectrum$intensity <- IRanges::NumericList(ms1_spectrum$intensity)
+    #   
+    #   ms1_spectrum <- Spectra(ms1_spectrum)
+    #   
+    #   ms1_spectra <- c(ms1_spectra, ms1_spectrum)
+    #   
+    #   
+    # }
     
   }
   
