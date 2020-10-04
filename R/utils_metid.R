@@ -139,7 +139,7 @@ compareSpectraLibrary <- function(x,
   
   # filter ms2library according to precursor information
   ms2library <- ms2library[which(abs(ms2library$precursorMz - mz) < tolerance + ppm(mz, ppm))]
-  ms2library <- ms2library[which(abs(ms2library$rtime + rtOffset - rtime) < rtimeTolerance)]
+  ms2library <- ms2library[which(abs(ms2library$rtime - rtime) < rtOffset + rtimeTolerance)]
   
   # costum matching function
   specNrow <-  function(x, y, ...) nrow(x)
@@ -191,5 +191,128 @@ compareSpectraLibrary <- function(x,
     
   } else {
     
+  }
+}
+
+#' @title  Compare against a MS2 library
+#' 
+#' @description 
+#' 
+#' `matchIonMode` allows to matches Cluster from different ion modes against each
+#'     other. Cluster are matched by retention time and then checked if they share
+#'     a common neutral mass.
+#' 
+#' @param pos `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster from positive mode
+#' @param pos `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster from negative mode
+#' @param pos_adducts `character` vector with adducts in positive mode to check
+#' @param neg_adducts `character` vector with adducts in negative mode to check
+#' @param tolerance `numeric` absolute tolerance for matching of peaks
+#' @param ppm `numeric` relative tolerance for matching of peaks
+#' @param rtOffset `numeric` known offset between measurement and library RT
+#' @param rtimeTolerance `numeric` tolerance for retention time search
+#' 
+#' @return `data.frame` with the results
+#'
+#' @import MetaboCoreUtils
+#'
+#' @export
+matchIonMode <- function(pos,
+                         neg,
+                         pos_adducts = c("[M+H]+", "[M+Na]+"),
+                         neg_adducts = c("[M-H]-"),
+                         tolerance = 0,
+                         ppm = 0,
+                         rtOffset = 0,
+                         rtimeTolerance = Inf) {
+  
+  print(tolerance)
+  print(ppm)
+
+  # get data
+  row_anno_pos <- getRowAnno(pos)
+  row_anno_neg <- getRowAnno(neg)
+  row_anno_pos$id <- row.names(row_anno_pos)
+  row_anno_neg$id <- row.names(row_anno_neg)
+  
+  match_df <- expand.grid(id.pos = row_anno_pos$id,
+                          id.neg = row_anno_neg$id,
+                          stringsAsFactors = FALSE)
+  
+  match_df <- merge(match_df, row_anno_pos, by.x = "id.pos", by.y = "id")
+  match_df <- merge(match_df, row_anno_neg, by.x = "id.neg", by.y = "id", suffixes = c(".pos", ".neg"))
+  
+  print(nrow(match_df))
+  
+  match_df <- match_df[which(abs(match_df$RT.pos - match_df$RT.neg) < rtOffset + rtimeTolerance),]
+  
+  print(nrow(match_df))
+  
+  for(i in 1:nrow(match_df)) {
+    
+    adduct_df <- expand.grid(adduct.pos = pos_adducts,
+                             adduct.neg = neg_adducts,
+                             stringsAsFactors = FALSE)
+    
+    adduct_df$mz.pos <- match_df$`m/z.pos`[i]
+    adduct_df$mz.neg <- match_df$`m/z.neg`[i]
+
+    adduct_df <- cbind(adduct_df, match = mapply(.adduct_match,
+                                                            adduct_df$adduct.pos,
+                                                            adduct_df$adduct.neg,
+                                                            adduct_df$mz.pos,
+                                                            adduct_df$mz.neg,
+                                                            tolerance,
+                                                            ppm))
+    
+    
+    
+    adduct_df <- adduct_df[which(adduct_df$match),]
+    
+    if(nrow(adduct_df) > 0) {
+      
+      print(adduct_df)
+      print(paste0(adduct_df$adduct.pos[1], "<->",adduct_df$adduct.neg[1]))
+
+      match_df$match[i] <- paste0(adduct_df$adduct.pos[1], "<->",adduct_df$adduct.neg[1])
+      
+    } else {
+      
+      match_df$match[i] <- NA
+      
+    }
+    
+  }
+  
+  match_df[which(!is.na(match_df$match)),]
+  
+}
+
+#'
+#' @import MetaboCoreUtils
+#' @noRd
+.adduct_match <- function(pos_adduct,
+                          neg_adduct,
+                          pos_mz,
+                          neg_mz,
+                          tolerance,
+                          ppm) {
+  
+  # calculate neutral masses
+  pos_m <- MetaboCoreUtils::mz2mass(pos_mz, pos_adduct)
+  neg_m <- MetaboCoreUtils::mz2mass(neg_mz, neg_adduct)
+  
+  # calculate matching error
+  if(neg_m > pos_m) {
+    tolerance_new <- tolerance + ppm(neg_m, ppm)
+  } else {
+    tolerance_new <- tolerance + ppm(pos_m, ppm)
+  }
+  
+  if(abs(pos_m - neg_m) < tolerance_new) {
+    return(TRUE)
+  } else {
+    return(FALSE)
   }
 }
