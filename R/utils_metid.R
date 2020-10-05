@@ -21,7 +21,7 @@
 #' 
 #' @examples 
 #' 
-annotateMz <- function(x, ms1Library,
+annotateMz <- function(x, ms1library,
                        tolerance = 0, ppm = 0,
                        rtimeTolerance = Inf,
                        matchAdduct = FALSE,
