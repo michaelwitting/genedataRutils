@@ -104,10 +104,7 @@ MS1 compound libraries have to be supplied as <code>data.frame</code>. The minim
 
 
 ```{r ms1matching}
-ms1library_file <- dir(system.file("extdata",
-                                  package = "genedataRutils"),
-                      pattern = ".tsv$",
-                      full.names = TRUE)
+ms1library_file <- system.file("extdata/pesticideLibMs1.tsv", package = "genedataRutils")
 
 ms1library <- read.table(ms1library_file, sep = "\t", header = TRUE, comment.char = "")
 
@@ -149,5 +146,15 @@ lib_results <- compareSpectraLibrary(spectra_filtered,
                                      tolerance = 0.005)
 
 head(lib_results)
+```
+
+```{r}
+metid_file <- system.file("extdata/metIds.tsv", package = "genedataRutils")
+
+metids <- read.table(metid_file, header = TRUE, row.names = 1, sep = "\t")
+
+gda_result_new <- addMetid(gda_result, metids)
+
+writeGda(gda_result_new)
 ```
 
