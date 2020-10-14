@@ -108,4 +108,5 @@ For creation of a <code>.ms</code> file a MS1 spectrum with the isotope pattern 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 writeSiriusFile(isoPatternComb, spectra)
+writeSiriusFile(isoPatternComb, spectra, singleFile = TRUE)
 ```
