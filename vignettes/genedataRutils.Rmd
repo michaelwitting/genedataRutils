@@ -148,6 +148,10 @@ lib_results <- compareSpectraLibrary(spectra_filtered,
 head(lib_results)
 ```
 
+## Adding Metabolite identifications
+
+Adding metabolite identifications to row annotations.
+
 ```{r}
 metid_file <- system.file("extdata/metIds.tsv", package = "genedataRutils")
 
