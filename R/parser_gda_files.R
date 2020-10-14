@@ -203,3 +203,81 @@ getRowAnno <- function(x) {
 getColAnno <- function(x) {
   x[[3]]
 }
+
+#'
+#'
+#'
+#' @export
+writeGda <- function(x, file = "export.gda") {
+  
+  # sanity checks
+  if(!length(x) == 3) {
+    
+    stop("Input is not of length 3. Sure it contains data from a .gda file?")
+    
+  }
+  
+  # isolate data and sort
+  ms_data <- getMsData(x)
+  row_anno <- getRowAnno(x)
+  col_anno <- getColAnno(x)
+  
+  
+  ms_data <- ms_data[,order(names(ms_data))]
+  col_anno <- col_anno[order(col_anno$File),]
+  
+  # check names are in same order
+  if(!all(names(ms_data) == col_anno$File)) {
+    
+    stop("Name not in same order")
+    
+  }
+  
+  ms_data_full <- merge(ms_data, row_anno, by = "row.names")
+  
+  if(file.exists(file)) {
+    
+    file.remove(file)
+    
+  }
+  
+  # helper function for writing file
+  con <- file(description = file, open = "at")
+  
+  .cat <- function(..., file = con, sep = "", append = TRUE) {
+    cat(..., file = file, sep = sep, append = append)
+  }
+  
+  #write meta data block
+  .cat("# Namespace: RExport\n")
+  .cat("# Rowtype: Metabolites\n")
+  .cat("# Observable: Max. Intensity\n")
+  .cat("# Row Annotations: ", ncol(row_anno), "\n")
+  .cat("# Column Annotations: ", ncol(col_anno) - 1, "\n")
+  .cat("# Transformation: LOG\n")
+  .cat("# Version: 1\n")
+  .cat("# Author: RExport\n")
+  
+  # write header
+  header <- colnames(ms_data_full)
+  header[1] <- "Name"
+  
+  .cat(paste0(header, collapse = "\t"))
+  .cat("\n")
+  
+  # write column annotation
+  col_anno_names <- colnames(col_anno)
+  col_anno_names <- col_anno_names[col_anno_names != "File"]
+  
+  for(col_anno_name in col_anno_names) {
+    
+    .cat(paste0(c(col_anno_name, as.vector(col_anno[,col_anno_name])), collapse = "\t"))
+    .cat("\n")
+    
+  }
+  
+  close(con)
+  
+  write.table(ms_data_full, file = file, append = TRUE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  
+}

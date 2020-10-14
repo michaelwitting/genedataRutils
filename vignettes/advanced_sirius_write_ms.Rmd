@@ -74,7 +74,10 @@ plotSpectra(isoPattern, main = isoPattern$CLUSTER_ID)
 Spectra can be combined if required
 
 ```{r}
-isoPatternComb <- combineSpectra(isoPattern, f = isoPattern$CLUSTER_ID, intensityFun = base::sum, mzd = 0.005)
+isoPatternComb <- combineSpectra(isoPattern,
+                                 f = isoPattern$CLUSTER_ID,
+                                 intensityFun = base::sum,
+                                 mzd = 0.005)
 
 plotSpectra(isoPatternComb, main = isoPatternComb$CLUSTER_ID)
 ```
