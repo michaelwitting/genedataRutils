@@ -33,7 +33,7 @@ Remotes:
     RforMassSpectrometry/Spectra,
     RforMassSpectrometry/MsCoreUtils,
     RforMassSpectrometry/MsBackendMgf,
-    RforMassSpectrometry/MetabCoreUtils,
+    RforMassSpectrometry/MetaboCoreUtils,
 License: CC BY-SA 4.0
 LazyData: yes
 Encoding: UTF-8
