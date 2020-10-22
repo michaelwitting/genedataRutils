@@ -1,5 +1,5 @@
-id	MSI	Name	Formula
-Cluster_0311	1	Myclobutanil	
-Cluster_0331	2	Spiroxamine	
-Cluster_0444	3	Tralkoxidym	
-Cluster_0615	4	Spirodiclofen	
+id	DBID	Formula	SMILES	InChI	Name	MSI
+Cluster_0311		C15H17ClN4			Myclobutanil	1
+Cluster_0331		C18H34NO2			Spiroxamine	1
+Cluster_0444		C20H27NO3			Tralkoxidym	1
+Cluster_0615		C21H24Cl2O4			Spirodiclofen	1
