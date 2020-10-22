@@ -190,7 +190,8 @@ compareSpectraLibrary <- function(x,
                          backward = res_backward,
                          count = res_count,
                          lib_accession = ms2library$accession,
-                         lib_name = paste0(unlist(ms2library$name), collapse = ";"),
+                         lib_name = unlist(lapply(ms2library$name, function(x) {paste0(x, collapse = ";")})),
+                         #lib_name = paste0(unlist(ms2library$name), collapse = ";"),
                          lib_exactmass = ms2library$exactmass,
                          lib_adduct = ms2library$adduct,
                          lib_precursorMz = ms2library$precursorMz,
@@ -224,8 +225,6 @@ compareSpectraLibrary <- function(x,
 #' @param rtimeTolerance `numeric` tolerance for retention time search
 #' 
 #' @return `data.frame` with the results
-#'
-#' @import MetaboCoreUtils
 #'
 #' @export
 matchIonMode <- function(pos,
@@ -289,9 +288,8 @@ matchIonMode <- function(pos,
   
 }
 
-#'
-#' @import MetaboCoreUtils
-#' @noRd
+#' @importFrom MetaboCoreUtils mz2mass
+#' @importFrom MsCoreUtils ppm
 .adduct_match <- function(pos_adduct,
                           neg_adduct,
                           pos_mz,
@@ -300,8 +298,8 @@ matchIonMode <- function(pos,
                           ppm) {
   
   # calculate neutral masses
-  pos_m <- MetaboCoreUtils::mz2mass(pos_mz, pos_adduct)
-  neg_m <- MetaboCoreUtils::mz2mass(neg_mz, neg_adduct)
+  pos_m <- mz2mass(pos_mz, pos_adduct)
+  neg_m <- mz2mass(neg_mz, neg_adduct)
   
   # calculate matching error
   if(neg_m > pos_m) {
@@ -318,7 +316,20 @@ matchIonMode <- function(pos,
 }
 
 
+#' @title  Compare against a MS2 library
+#' 
+#' @description 
+#' 
+#' `addMetid` allows to matches Cluster from different ion modes against each
+#'     other. Cluster are matched by retention time and then checked if they share
+#'     a common neutral mass.
+#' 
+#' @param x `list` List with data read from .gda file.
+#' @param metids `data.frame`
+#' 
+#' @return `list` Same as x, but additionally contains columns from metids
 #'
+#' @import MetaboCoreUtils
 #'
 #' @export
 addMetid <- function(x, metids) {
@@ -330,9 +341,9 @@ addMetid <- function(x, metids) {
     
   }
   
-  if(!all(c("MSI", "Name", "Formula") %in% colnames(metids))) {
+  if(!all(c("DBID", "Formula", "SMILES", "InChI", "Name", "MSI") %in% colnames(metids))) {
     
-    stop("metids must contain minimal: MSI, Name and Formula")
+    stop("metids must contain minimal: DBID, Formula, SMILES, InChI, Name, MSI")
     
   }
   

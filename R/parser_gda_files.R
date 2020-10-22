@@ -23,9 +23,6 @@
 #' @export
 #'
 #' @examples
-#'
-#' file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-#' pest_cluster <- readGda(file)
 #' 
 readGda <- function(file) {
   
@@ -148,12 +145,53 @@ readGda <- function(file) {
 #'
 #' @examples
 #'
-#' file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-#' pest_cluster <- readGda(file)
-#' getMsData(pest_cluster)
-#'
 getMsData <- function(x) {
   x[[1]]
+}
+
+#' @title Sets feature data from read .gda file
+#'
+#' @description
+#'
+#' `setMsData` Sets the MS data, data is checked if row names match
+#'
+#' @param x `list` List with data read from .gda file.
+#' @param msData `data.frame` Replacement for MS data in x, rownames must match
+#'
+#' @return A list with MS data, row annotations, column annotations
+#'
+#' @author Michael Witting
+#'
+#' @export
+#'
+#' @examples
+#'
+setMsData <- function(x, msData) {
+  
+  # isolate data
+  row_anno <- getRowAnno(x)
+  col_anno <- getColAnno(x)
+  
+  # check that sample names are the same
+  if(!identical(sort(rownames(row_anno)),
+                sort(rownames(msData)))) {
+    
+    stop("Row names are not matching!")
+    
+  }
+  
+  # check that sample names are the same
+  if(!identical(sort(col_anno$File),
+                sort(colnames(msData)))) {
+    
+    stop("Column names are not matching!")
+    
+  }
+  
+  x[[1]] <- msData
+  
+  x
+  
 }
 
 #' @title Get row annotation data from read .gda file
@@ -172,12 +210,45 @@ getMsData <- function(x) {
 #'
 #' @examples
 #'
-#' file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-#' pest_cluster <- readGda(file)
-#' getRowAnno(pest_cluster)
-#'
 getRowAnno <- function(x) {
   x[[2]]
+}
+
+#' @title Sets row annotation data from read .gda file
+#'
+#' @description
+#'
+#' `setRowAnno` Sets the row annotation data, data is checked if row names match
+#'
+#' @param x `list` List with data read from .gda file.
+#' @param rowAnno `data.frame` Replacement for row annotation data in x,
+#'      rownames must match
+#'
+#' @return A list with MS data, row annotations, column annotations
+#'
+#' @author Michael Witting
+#'
+#' @export
+#'
+#' @examples
+#'
+setRowAnno <- function(x, rowAnno) {
+  
+  # isolate data
+  row_anno <- getRowAnno(x)
+  
+  # check that sample names are the same
+  if(!identical(sort(rownames(row_anno)),
+                sort(rownames(rowAnno)))) {
+    
+    stop("Row names are not matching!")
+    
+  }
+  
+  x[[2]] <- rowAnno
+  
+  x
+  
 }
 
 #' @title Get column annotation data from read .gda file
@@ -196,18 +267,62 @@ getRowAnno <- function(x) {
 #'
 #' @examples
 #'
-#' file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-#' pest_cluster <- readGda(file)
-#' getColAnno(pest_cluster)
-#'
 getColAnno <- function(x) {
   x[[3]]
 }
 
+#' @title Sets feature data from read .gda file
 #'
+#' @description
 #'
+#' `setColAnno` Sets the column annotation data, data is checked if row names match
+#'
+#' @param x `list` List with data read from .gda file.
+#' @param colAnno `data.frame` Replacement for column annotation data in x,
+#'      rownames must match
+#'
+#' @return A list with MS data, row annotations, column annotations
+#'
+#' @author Michael Witting
 #'
 #' @export
+#'
+#' @examples
+#'
+setColAnno <- function(x, colAnno) {
+  
+  # isolate data
+  col_anno <- getColAnno(x)
+
+  # check that sample names are the same
+  if(!identical(sort(col_anno$File),
+                sort(colnames(colAnno)))) {
+    
+    stop("Column names are not matching!")
+    
+  }
+  
+  x[[3]] <- colAnno
+  
+  x
+  
+}
+
+#' @title Write .gda file
+#'
+#' @description
+#'
+#' `writeGda` Writes a list of row and column annotation and ms data to a file
+#' 
+#' @param x `list` List with data read from .gda file. 
+#' @param file `character` Name of file to write to
+#'
+#' @author Michael Witting
+#'
+#' @export
+#'
+#' @examples
+#'
 writeGda <- function(x, file = "export.gda") {
   
   # sanity checks
@@ -279,5 +394,93 @@ writeGda <- function(x, file = "export.gda") {
   close(con)
   
   write.table(ms_data_full, file = file, append = TRUE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  
+}
+
+
+#' @title Remove specific samples from data
+#'
+#' @description
+#'
+#' `removeSamples` Removes specific samples from the data
+#'
+#' @param x `list` List with data read from .gda file.#' 
+#' @param samples `character` Vector with the sample names to be removed
+#'
+#' @author Michael Witting
+#'
+#' @export
+#'
+#' @examples
+#'
+removeSamples <- function(x, samples) {
+  
+  # sanity checks
+  if(!length(x) == 3) {
+    
+    stop("Input is not of length 3. Sure it contains data from a .gda file?")
+    
+  }
+  
+  # isolate data and sort
+  ms_data <- getMsData(x)
+  row_anno <- getRowAnno(x)
+  col_anno <- getColAnno(x)
+  
+  # test if samples are contained in x
+  if(!samples %in% colnames(ms_data)) {
+    
+    stop("sample not contained in data set")
+    
+  }
+  
+  ms_data <- ms_data[,!colnames(ms_data) %in% samples]
+  col_anno <- col_anno[which(!col_anno$File %in% samples),]
+  
+  list(ms_data, row_anno, col_anno)
+  
+}
+
+#' @title Remove specific cluster from data
+#'
+#' @description
+#'
+#' `removeCluster` Removes specific clusterfrom the data
+#'
+#' @param x `list` List with data read from .gda file.
+#' 
+#' @param cluster `character` Vector with the cluster to be removed
+#'
+#' @author Michael Witting
+#'
+#' @export
+#'
+#' @examples
+#'
+removeCluster <- function(x, cluster) {
+  
+  # sanity checks
+  if(!length(x) == 3) {
+    
+    stop("Input is not of length 3. Sure it contains data from a .gda file?")
+    
+  }
+  
+  # isolate data and sort
+  ms_data <- getMsData(x)
+  row_anno <- getRowAnno(x)
+  col_anno <- getColAnno(x)
+  
+  # test if samples are contained in x
+  if(!cluster %in% row.names(ms_data)) {
+    
+    stop("sample not contained in data set")
+    
+  }
+  
+  ms_data <- ms_data[!(row.names(ms_data) %in% cluster),]
+  row_anno <- row_anno[!(row.names(row_anno) %in% cluster),]
+  
+  list(ms_data, row_anno, col_anno)
   
 }
