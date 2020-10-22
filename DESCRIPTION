@@ -11,7 +11,7 @@ Description: Reading and working with Genedata Expressionist for MS .gda files
 Depends:
     R (>= 3.6.0),
     Spectra (>= 0.5.0),
-    MsCoreUtils(>= 0.99.3),
+    MsCoreUtils(>= 1.1.5),
     MetaboCoreUtils,
     MsBackendMgf(>= 0.1.0),
     BiocGenerics,
