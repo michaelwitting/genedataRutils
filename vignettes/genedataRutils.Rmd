@@ -26,43 +26,74 @@ library(BiocStyle)
 
 # Introduction
 
-Genedata Expressionist for MS allows to export results in different file formats. One of these formats is <code>.gda</code>. This format is read by the Analyst module in Genedata Expressionist for MS. Beside the actual peak data it contains metadata like annotations of samples are peaks. The package <code>genedataRutils</code> was developed to enable seamless reading of these files into R and allow further processing. This vignette describes the basic functions for reading of MS1 data in form of <code>.gda</code> files and MS2 data in form of <code>.mgf</code> files.
+Genedata Expressionist for MS allows to export results in different file formats. One of these formats is <code>.gda</code>. This format is read by the Analyst module in Genedata Expressionist for MS. Beside the actual peak data it contains metadata like annotations of samples and peaks. The package <code>genedataRutils</code> was developed to enable seamless reading of these files into R and allow further processing. This vignette describes the basic functions for reading and processing of MS1 data in form of <code>.gda</code> files and MS2 data in form of <code>.mgf</code> files.
 
-# Loading the library
+## Loading the library
 
-The <code>genedataRutils</code> package is available from GitHub and can be directly installed from there using the <code>devtools::install_github()</code> function. Once installed the package can be loaded via <code>library()</code>. This vignette uses additionally functionalities from the <code>MSnbase</code> package for handling of MS2 data.
+The <code>genedataRutils</code> package is available from GitHub and can be directly installed from there using the <code>devtools::install_github()</code> function. Once installed the package can be loaded via <code>library()</code>. This vignette uses additionally functionalities from the <code>RforMassSpectrometry</code> packages for handling of MS2 data.
 
 ```{r, eval=FALSE}
 devtools::install_github("michaelwitting/genedataRutils")
 ```
 
+After installation the library can be loaded.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # load required libraries
 library(genedataRutils)
+library(Spectra)
 ```
 
-# Reading MS1 
+## Reading, processing and writing MS1 data 
 
-<code>.gda</code> files are read via the <code>readGda()</code> function. A single file is read and three data frames are created, which are returned as list. The first one is called <code>ms_data</code> and contains the actual intensties or areas that were exported. The two other data frames are called <code>col_anno</code> and <code>row_anno</code> and contain the annotations of the rows and the columns. All data frames are using the IDs of the peaks, cluster etc as row names. They can be either accessed with <code>[</code> or with the functions below.
+<code>.gda</code> files are read via the <code>readGda()</code> function. A single file is read and three data frames are created, which are returned as list. The first one is called <code>ms_data</code> and contains the actual intensties or areas that were exported. The two other data frames are called <code>col_anno</code> and <code>row_anno</code> and contain the annotations of the rows and the columns. All data frames are using the IDs of the peaks, cluster etc as row names or sample names as column names or in the <code>$File</code> variable.
 The example below reads a short example distributed with the <code>genedataRutils</code> package.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-# load example file
-gda_file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda",
-                        package = "genedataRutils")
+# load example file and read MS1 data
+ms1_cluster <- readGda(system.file("extdata/20191108_Pesticides_test_Cluster.gda",
+                            package = "genedataRutils"))
 
-# read example file
-gda_result <- readGda(gda_file)
+ms1_cluster
 ```
+
+The individual data portions can be accessed by the respective <code>get</code>-methods. This returns the respective part as <code>data.frame</code>. 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-ms_data <- getMsData(gda_result)
-row_anno <- getRowAnno(gda_result)
-col_anno <- getColAnno(gda_result)
+# get data stored in ms1_cluster
+getMsData(ms1_cluster)
+getRowAnno(ms1_cluster)
+getColAnno(ms1_cluster)
 ```
 
-# Linking MS1 and MS2 data
+Similar to get <code>get</code>-methods, <code>set</code>-methods are available. These can be used if the content needs to be changed, e.g. normalizing data or so. The <code>set</code>-methods are checking of the supplied <code>data.frame</code> is checking if row and column names are fitting.
+
+```{r}
+# get data, changed it and return original
+ms_data <- getMsData(ms1_cluster)
+ms_data <- ms_data / max(ms_data) * 100
+setMsData(ms1_cluster, ms_data)
+```
+
+```{r, error=TRUE}
+#setMsData(ms1_cluster, ms_data[-1,])
+#setMsData(ms1_cluster, ms_data[,-1])
+```
+
+In the frame of processing it might be required  to remove specific samples or peaks. This can be achieved by the functions <code>removeSamples</code> and <code>removeCluster</code>.
+
+```{r}
+removeSamples(ms1_cluster, "MSMSpos_0402_RP_2-A,1_01_15100")
+removeCluster(ms1_cluster, "Cluster_0311")
+```
+
+If changes made to the data in R shall be written, the <code>writeGda</code> function generates a new .gda file from the data.
+
+```{r}
+writeGda(ms1_cluster, file = "export.gda")
+```
+
+## Linking MS1 and MS2 data
 
 In order to enable correct identification of metabolites MS2 data is required. Genedata Expressionist for MS can export MS2 data as .mgf files. These can be loaded e.g. using the <code>MsBackendMgf</code>. <code>genedataRutils</code> requires spectra as <code>Spectra</code> object.
 
@@ -76,7 +107,7 @@ mgf_files <- dir(system.file("extdata",
                    pattern = "mgf$",
                    full.names = TRUE)
   
-spectra <- Spectra(mgf_files,
+ms2_spectra <- Spectra(mgf_files,
                    source = MsBackendMgf(),
                    backend = MsBackendDataFrame())
 ```
@@ -85,7 +116,7 @@ The function <code>ms2AddId()</code> adds the ID of the corresponding MS1 peak a
 
 ```{r}
 # add MS1 id
-spectra <- ms2AddId(gda_result, spectra)
+spectra <- ms2AddId(ms1_cluster, ms2_spectra)
 head(spectra$CLUSTER_ID)
 ```
 
@@ -94,32 +125,80 @@ This new variable can be used to subset the <code>Spectra</code> object.
 ```{r}
 spectra[which(spectra$CLUSTER_ID == "Cluster_0615")]
 ```
-## Optional: Library matching
 
-<code>genedataRutils</code> enables the annotation on the MS1 and MS2 level.
+## Reconstruction of isotope pattern
 
-### MS1
+Genedata Expressionist for MS has no functionality to display the isotope pattern that have been grouped together. However, peaks and isotope clusters can be exported as separate <code>.gda</code> files. These files can be used to reconstruct the isotope pattern from the grouping. The prequisite is that the files contain the respective cluster and peak IDs. This vignette shows based on example files how the isotope pattern can be reconstructed.
 
-MS1 compound libraries have to be supplied as <code>data.frame</code>. The minimal information in this <code>data.frame</code> are the following colummns: <code>name</name>, <code>adduct</code> and <code>mz</code>.
+```{r}
+# load example file and read MS1 data
+ms1_peak <- readGda(system.file("extdata/20191108_Pesticides_test_Peaks.gda",
+                            package = "genedataRutils"))
 
+ms1_peak
+```
+
+The MS1 spectra are reconstructed for each file and cluster. This requires the row annotation data frame for the peaks and cluster as well as the intensities of the individual peaks. The function <code>reconstructIsoPattern</code> combines this information and returns a <code>Spectra</code> object which contains the MS1 spectrum for each cluster in each sample. The example used here contains four clusters and four samples. Therefore, 16 spectra are returned. The code can be parallelized by registering a parallel cluster. This is strongly advisable, since for a large number of cluster and samples long run times are expected.
+
+```{r}
+# reconstruct MS1 spectra for Fluopicolide
+isoPattern <- reconstructIsoPattern(ms1_peak, ms1_cluster)
+head(isoPattern)
+```
+
+Isotope pattern can be plotted using the <code>plotSpectra</code> function from the <code>Spectra</code> package.
+
+```{r}
+plotSpectra(isoPattern, main = isoPattern$CLUSTER_ID)
+```
+
+Since often only a single representative isotope pattern is required, the individual spectra can be combined using the <code>combineSpectra</code> function from the <code>Spectra</code> package.
+
+```{r}
+isoPatternComb <- combineSpectra(isoPattern,
+                                 f = isoPattern$CLUSTER_ID,
+                                 intensityFun = base::sum,
+                                 mzd = 0.005)
+
+plotSpectra(isoPatternComb, main = isoPatternComb$CLUSTER_ID)
+```
+
+Finally, MS1 and MS2 spectra can be written .mgf files for future use. The <code>export</code> function from the <code>MsBackendMgf</code> package supports also the export of custom variables such as <code>$CLUSTER_ID</code>.
+
+```{r}
+export(ms2_spectra, backend = MsBackendMgf(), file = "MS2_spectra.mgf")
+export(isoPatternComb, backend = MsBackendMgf(), file = "MS1_spectra.mgf")
+```
+
+## Creating of Sirius .ms files
+
+The Sirius software from the Boecker group offers the possibility of formula calculation and MS2 data analysis. The software can be downloaded from [here](https://bio.informatik.uni-jena.de/software/sirius/). To be used optimal the isotope pattern as well as fragmentation spectra need to be delivered to the software. This is done best in the .ms format defined by the Boecker group.
+For creation of a .ms file a MS1 spectrum with the isotope pattern and minimum one MS2 spectrum are required. Both have to be stored in a <code>Spectra</code> object and contain the metadata columns <code>CLUSTER_ID</code> and <code>RAWFILE</code>. Furthermore, the values in <code>CLUSTER_ID</code> in the MS1 and MS2 data have to match. Lastly, the row annotation of the clusters are required to isolate the averaged precursor m/z for writing of the file. The example code below fetches all the cluster ids from the MS1 spectra data and iterates over it. A <code>.ms</code> file is only written if minimum one MS2 spectrum is available. Data can be either written to one single file or an individual file per peak.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# write single file
+writeSiriusFile(isoPatternComb, spectra, singleFile = TRUE)
+
+# write multiple files
+writeSiriusFile(isoPatternComb, spectra)
+```
+
+## Metabolite identification with <code>genedataRutils</code>
+
+<code>genedataRutils</code> enables the annotation on the MS1 and MS2 level. MS1 compound libraries have to be supplied as <code>data.frame</code>. The minimal information in this <code>data.frame</code> are the following colummns: <code>name</code>, <code>adduct</code> and <code>mz</code>.
 
 ```{r ms1matching}
-ms1library_file <- dir(system.file("extdata",
-                                  package = "genedataRutils"),
-                      pattern = ".tsv$",
-                      full.names = TRUE)
+ms1library_file <- system.file("extdata/pesticideLibMs1.tsv", package = "genedataRutils")
 
 ms1library <- read.table(ms1library_file, sep = "\t", header = TRUE, comment.char = "")
 
 adducts <- c("[M+H]+")
 
-annotateMz(gda_result,
+annotateMz(ms1_cluster,
            ms1library,
            tolerance = 0.005,
            adducts = adducts)
 ```
-
-### MS2
 
 Beyond MS1 matching, library searching for MS2 is possible. MS2 libraries have to be present as <code>Spectra</code>. Comparison is based on <code>compareSpectra</code> and returns the forward and reverse dotproduct. The <code>Spectra</code> object needs to contain the following columns: <code>accession</code>, <code>name</code>, <code>exactmass</code>, <code>adduct</code>, <code>precursorMz</code>. A <code>data.frame</code> with all the results is returned. In the example below before matching peaks below 1% of the based peak removed to improve results.
 
@@ -149,5 +228,49 @@ lib_results <- compareSpectraLibrary(spectra_filtered,
                                      tolerance = 0.005)
 
 head(lib_results)
+```
+
+## Adding Metabolite identifications
+
+If the identification of metabolites was successful, the results can be mapped back to the row annotations. A <code>data.frame</code> with the cluster or peak ids as row names is required. Additionally, the columns <code>\$DBID</code>, <code>\$Formula</code>, <code>\$SMILES</code>, <code>\$InChI</code>, <code>\$Name</code> and <code>\$MSI</code> are required. If any information of them is not available they should be filled with <code>NA</code>. The column <code>\$MSI<code> refers to the level of identification defined by the Metabolomics Standard Initiative.
+
+```{r}
+metids <- read.table(system.file("extdata/metIds.tsv",
+                                 package = "genedataRutils"),
+                     header = TRUE,
+                     row.names = 1,
+                     sep = "\t")
+
+head(metids)
+```
+
+Using the function <code>addMetid</code> the metabolite identifications are added to the row annotations.
+
+```{r}
+ms1_cluster_new <- addMetid(ms1_cluster, metids)
+head(getRowAnno(ms1_cluster_new))
+```
+
+## Writing of results to differnt formats
+
+After processing the data can be written to different formats. One is the original .gda format for Genedata Expressionst. Furthermore, export into a prototype MAF file for the Metabolights data repository. However this is currently only a prototype and will be expanded further.
+
+```{r}
+writeGda(ms1_cluster_new)
+
+createMtblsMetaboliteFile(ms1_cluster, "ID0001")
+createMtblsMetaboliteFile(ms1_cluster_new, "ID0002")
+```
+
+Additionally to the MAF file the sample can be created.
+
+```{r}
+createMtblsSampleFile(ms1_cluster_new, "ID0002")
+```
+
+## Session info
+
+```{r}
+sessionInfo()
 ```
 

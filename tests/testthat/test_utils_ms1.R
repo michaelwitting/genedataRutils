@@ -10,7 +10,7 @@ test_that("Util functions for working with MS2", {
   spectra <- reconstructIsoPattern(gda_peaks, gda_cluster)
   
   # perform tests
-  expect_equal(length(spectra), 60)
+  expect_equal(length(spectra), 16)
   expect_equal(unique(spectra$CLUSTER_ID), c("Cluster_0311", "Cluster_0331", "Cluster_0444", "Cluster_0615"))
   
 })

@@ -6,7 +6,7 @@
 \usage{
 annotateMz(
   x,
-  ms1Library,
+  ms1library,
   tolerance = 0,
   ppm = 0,
   rtimeTolerance = Inf,
@@ -18,15 +18,15 @@ annotateMz(
 \item{x}{\code{list} List with data read from .gda file containing grouped
 MS1 cluster}
 
+\item{ms1library}{\code{data.frame} Data frame containing MS1 library, minimal
+columns are name, adduct and mz}
+
 \item{tolerance}{\code{numeric} absolute tolerance for matching of peaks}
 
 \item{ppm}{\code{numeric} relative tolerance for matching of peaks}
 
 \item{adducts}{\code{character} Vector with adducts to be used. Names of adducts
 between \code{ms1library} and \code{adducts} have to match!}
-
-\item{ms1library}{\code{data.frame} Data frame containing MS1 library, minimal
-columns are name, adduct and mz}
 
 \item{matchAdducts}{\code{boolean} Indicates if MS1 library shall be first
 filtered based on the values in \code{adducts}}

@@ -4,12 +4,20 @@
 \alias{writeSiriusFile}
 \title{Importing Genedata Expressionist for MS .gda files}
 \usage{
-writeSiriusFile(ms1_spectra = Spectra(), ms2_spectra = Spectra(), folder = ".")
+writeSiriusFile(
+  ms1_spectra = Spectra(),
+  ms2_spectra = Spectra(),
+  folder = ".",
+  singleFile = FALSE
+)
 }
 \arguments{
 \item{ms2_spectra}{\code{Spectra} <code>Spectra</code> containing MS2 data}
 
 \item{folder}{\code{character} path to folder where .ms files shall be stored}
+
+\item{singleFile}{\code{boolean} Indicates if a single file shall be generated,
+default is FALSE}
 
 \item{ms1_spectrum}{\code{Spectra} <code>Spectra</code> containing isotope pattern}
 }

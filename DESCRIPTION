@@ -1,28 +1,28 @@
 Package: genedataRutils
 Title: Collection of utility functions to work with .gda files in R
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: 
-    person(given = "Michael",
-           family = "Witting",
-           role = c("aut", "cre"),
-           email = "michael.witting@helmholtz-muenchen.de",
-           comment = c(ORCID = "0000-0002-1462-4426"))
+    c(person(given = "Michael", family = "Witting",
+             role = c("aut", "cre"),
+             email = "michael.witting@helmholtz-muenchen.de",
+             comment = c(ORCID = "0000-0002-1462-4426")))
 Description: Reading and working with Genedata Expressionist for MS .gda files
     in R
-License: CC BY-SA 4.0
-Encoding: UTF-8
-VignetteBuilder: knitr
-LazyData: true
-RoxygenNote: 7.1.1
 Depends:
     R (>= 3.6.0),
     Spectra (>= 0.5.0),
-    MsCoreUtils(>= 0.99.3),
+    MsCoreUtils(>= 1.1.5),
+    MetaboCoreUtils,
     MsBackendMgf(>= 0.1.0),
     BiocGenerics,
     reshape2,
     IRanges,
     S4Vectors
+Imports:
+    BiocParallel,
+    S4Vectors,
+    IRanges,
+    methods   
 Suggests:
     testthat,
     knitr (>= 1.1.0),
@@ -32,8 +32,14 @@ Suggests:
 Remotes:
     RforMassSpectrometry/Spectra,
     RforMassSpectrometry/MsCoreUtils,
-    RforMassSpectrometry/MsBackendMgf
-URL: https://github.com/michaelwitting/genedataRutils
+    RforMassSpectrometry/MsBackendMgf,
+    RforMassSpectrometry/MetaboCoreUtils,
+License: CC BY-SA 4.0
+LazyData: yes
+Encoding: UTF-8
+VignetteBuilder: knitr
 BugReports: https://github.com/michaelwitting/genedataRutils/issues
+URL: https://github.com/michaelwitting/genedataRutils
 biocViews: Infrastructure, MassSpectrometry, Metabolomics
 Roxygen: list(markdown=TRUE)
+RoxygenNote: 7.1.1

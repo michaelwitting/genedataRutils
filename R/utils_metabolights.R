@@ -209,11 +209,11 @@ createMtblsMetaboliteFile <- function(x, study_id) {
   }
 
   # add fixed part
-  metabolite_df <- data.frame("database_identifier" = NA_character_,
-                              "chemical_formula" = NA_character_,
-                              "smiles" = NA_character_,
-                              "inchi" = NA_character_,
-                              "metabolite_identification" = NA_character_,
+  metabolite_df <- data.frame("database_identifier" = if(is.null(row_anno$DBID)) {NA_character_} else {row_anno$DBID},
+                              "chemical_formula" = if(is.null(row_anno$Formula)) {NA_character_} else {row_anno$Formula},
+                              "smiles" = if(is.null(row_anno$SMILES)) {NA_character_} else {row_anno$SMILES},
+                              "inchi" = if(is.null(row_anno$InChI)) {NA_character_} else {row_anno$InChI},
+                              "metabolite_identification" = if(is.null(row_anno$Name)) {NA_character_} else {row_anno$Name},
                               "mass_to_charge" = row_anno$`m/z`,
                               "fragmentation" = NA_character_,
                               "modifications" = NA_character_,
@@ -223,7 +223,7 @@ createMtblsMetaboliteFile <- function(x, study_id) {
                               "species" = NA_character_,
                               "database" = NA_character_,
                               "database_version" = NA_character_,
-                              "reliability" = NA_character_,
+                              "reliability" = if(is.null(row_anno$MSI)) {NA_character_} else {row_anno$MSI},
                               "uri" = NA_character_,
                               "search_engine" = NA_character_,
                               "search_engine_score" = NA_character_,

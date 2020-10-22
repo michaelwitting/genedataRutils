@@ -21,14 +21,14 @@
 #' 
 #' @examples 
 #' 
-annotateMz <- function(x, ms1Library,
+annotateMz <- function(x, ms1library,
                        tolerance = 0, ppm = 0,
                        rtimeTolerance = Inf,
                        matchAdduct = FALSE,
                        adducts = c("[M+H]+")) {
 
   # sanity checks on ms1Library
-  if(!all(c("name", "adduct", "mz") %in% colnames(ms1Library))) {
+  if(!all(c("name", "adduct", "mz") %in% colnames(ms1library))) {
     
     stop("The columns name, adduct and mz are required")
     
@@ -42,6 +42,7 @@ annotateMz <- function(x, ms1Library,
   }
   
   row_anno <- getRowAnno(x)
+  row_anno$id <- row.names(row_anno)
   
   # order library according to mz for closest function
   ms1library <- ms1library[order(ms1library$mz),]
@@ -135,7 +136,16 @@ compareSpectraLibrary <- function(x,
   # get precursor information
   mz <- x$precursorMz
   rtime <- x$rtime
-  cluster_id <- x$CLUSTER_ID
+  
+  if("CLUSTER_ID" %in% spectraVariables(x)) {
+    cluster_id <- x$CLUSTER_ID
+  } else {
+    cluster_id <- paste0("M",
+                         mz,
+                         "T",
+                         as.integer(rtime))
+  }
+  
   
   # filter ms2library according to precursor information
   ms2library <- ms2library[which(abs(ms2library$precursorMz - mz) < tolerance + ppm(mz, ppm))]
@@ -180,7 +190,8 @@ compareSpectraLibrary <- function(x,
                          backward = res_backward,
                          count = res_count,
                          lib_accession = ms2library$accession,
-                         lib_name = paste0(unlist(ms2library$name), collapse = ";"),
+                         lib_name = unlist(lapply(ms2library$name, function(x) {paste0(x, collapse = ";")})),
+                         #lib_name = paste0(unlist(ms2library$name), collapse = ";"),
                          lib_exactmass = ms2library$exactmass,
                          lib_adduct = ms2library$adduct,
                          lib_precursorMz = ms2library$precursorMz,
@@ -215,8 +226,6 @@ compareSpectraLibrary <- function(x,
 #' 
 #' @return `data.frame` with the results
 #'
-#' @import MetaboCoreUtils
-#'
 #' @export
 matchIonMode <- function(pos,
                          neg,
@@ -226,9 +235,6 @@ matchIonMode <- function(pos,
                          ppm = 0,
                          rtOffset = 0,
                          rtimeTolerance = Inf) {
-  
-  print(tolerance)
-  print(ppm)
 
   # get data
   row_anno_pos <- getRowAnno(pos)
@@ -243,11 +249,7 @@ matchIonMode <- function(pos,
   match_df <- merge(match_df, row_anno_pos, by.x = "id.pos", by.y = "id")
   match_df <- merge(match_df, row_anno_neg, by.x = "id.neg", by.y = "id", suffixes = c(".pos", ".neg"))
   
-  print(nrow(match_df))
-  
   match_df <- match_df[which(abs(match_df$RT.pos - match_df$RT.neg) < rtOffset + rtimeTolerance),]
-  
-  print(nrow(match_df))
   
   for(i in 1:nrow(match_df)) {
     
@@ -271,9 +273,6 @@ matchIonMode <- function(pos,
     adduct_df <- adduct_df[which(adduct_df$match),]
     
     if(nrow(adduct_df) > 0) {
-      
-      print(adduct_df)
-      print(paste0(adduct_df$adduct.pos[1], "<->",adduct_df$adduct.neg[1]))
 
       match_df$match[i] <- paste0(adduct_df$adduct.pos[1], "<->",adduct_df$adduct.neg[1])
       
@@ -289,9 +288,8 @@ matchIonMode <- function(pos,
   
 }
 
-#'
-#' @import MetaboCoreUtils
-#' @noRd
+#' @importFrom MetaboCoreUtils mz2mass
+#' @importFrom MsCoreUtils ppm
 .adduct_match <- function(pos_adduct,
                           neg_adduct,
                           pos_mz,
@@ -300,8 +298,8 @@ matchIonMode <- function(pos,
                           ppm) {
   
   # calculate neutral masses
-  pos_m <- MetaboCoreUtils::mz2mass(pos_mz, pos_adduct)
-  neg_m <- MetaboCoreUtils::mz2mass(neg_mz, neg_adduct)
+  pos_m <- mz2mass(pos_mz, pos_adduct)
+  neg_m <- mz2mass(neg_mz, neg_adduct)
   
   # calculate matching error
   if(neg_m > pos_m) {
@@ -315,4 +313,54 @@ matchIonMode <- function(pos,
   } else {
     return(FALSE)
   }
+}
+
+
+#' @title  Compare against a MS2 library
+#' 
+#' @description 
+#' 
+#' `addMetid` allows to matches Cluster from different ion modes against each
+#'     other. Cluster are matched by retention time and then checked if they share
+#'     a common neutral mass.
+#' 
+#' @param x `list` List with data read from .gda file.
+#' @param metids `data.frame`
+#' 
+#' @return `list` Same as x, but additionally contains columns from metids
+#'
+#' @import MetaboCoreUtils
+#'
+#' @export
+addMetid <- function(x, metids) {
+  
+  # sanity checks
+  if(!length(x) == 3) {
+    
+    stop("Input is not of length 3. Sure it contains data from a .gda file?")
+    
+  }
+  
+  if(!all(c("DBID", "Formula", "SMILES", "InChI", "Name", "MSI") %in% colnames(metids))) {
+    
+    stop("metids must contain minimal: DBID, Formula, SMILES, InChI, Name, MSI")
+    
+  }
+  
+  if(!all(row.names(metids) %in% rownames(getRowAnno(x)))) {
+    
+    stop("IDs in metids not found in data")
+    
+  }
+  
+  row_anno <- getRowAnno(x)
+  
+  row_anno <- merge(row_anno, metids, by = "row.names", all = TRUE)
+  row.names(row_anno) <- row_anno$Row.names
+  row_anno <- row_anno[, !(colnames(row_anno) %in% c("Row.names"))]
+
+  x[[2]] <- row_anno
+  
+  x
+  
 }
