@@ -1,0 +1,5 @@
+"database_identifier" "chemical_formula" "smiles" "inchi" "metabolite_identification" "mass_to_charge" "fragmentation" "modifications" "charge" "retention_time" "taxid" "species" "database" "database_version" "reliability" "uri" "search_engine" "search_engine_score" "smallmolecule_abundance_sub" "smallmolecule_abundance_stdev_sub" "smallmolecule_abundance_std_error_sub" "id" "MSMSpos_0402_RP_2-A,1_01_15100" "MSMSpos_0403_RP_2-A,1_01_15101" "MSMSpos_0404_RP_2-A,1_01_15103" "MSMSpos_0405_RP_2-A,1_01_15104"
+NA "C15H17ClN4" NA NA "Myclobutanil" 289.1205133 NA NA NA 5.050113713 NA NA NA NA 1 NA NA NA NA NA NA NA 258069.55 261544.28 264377.12 267178.5
+NA "C18H34NO2" NA NA "Spiroxamine" 298.2731085 NA NA NA 4.575427675 NA NA NA NA 1 NA NA NA NA NA NA NA 1249280.5 1265684.1 1298840.4 1296037.8
+NA "C20H27NO3" NA NA "Tralkoxidym" 330.2055515 NA NA NA 6.306111777 NA NA NA NA 1 NA NA NA NA NA NA NA 691903.25 702789.9 709724.56 707017.8
+NA "C21H24Cl2O4" NA NA "Spirodiclofen" 411.1119185 NA NA NA 6.658807982 NA NA NA NA 1 NA NA NA NA NA NA NA 195020.28 188603.23 171601.2 187979.81
