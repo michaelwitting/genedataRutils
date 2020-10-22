@@ -17,10 +17,6 @@ A data frame wit row annotations.
 }
 \examples{
 
-file <- system.file("extdata/20191108_Pesticides_test_Cluster.gda", package = "genedataRutils")
-pest_cluster <- readGda(file)
-getRowAnno(pest_cluster)
-
 }
 \author{
 Michael Witting
