@@ -114,6 +114,12 @@ writeSiriusFile <- function(ms1_spectra = Spectra(),
             
           }
         }
+      } else {
+        
+        .cat("\n\n>ms2\n")
+        .cat(min(ms1_spectrum$mz), " 100")
+        .cat("\n")
+        
       }
     }
     
