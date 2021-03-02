@@ -22,7 +22,9 @@
 #' @examples 
 #' 
 annotateMz <- function(x, ms1library,
-                       tolerance = 0, ppm = 0,
+                       tolerance = 0,
+                       ppm = 0,
+                       rtOffset = 0,
                        rtimeTolerance = Inf,
                        matchAdduct = FALSE,
                        adducts = c("[M+H]+")) {
@@ -31,6 +33,12 @@ annotateMz <- function(x, ms1library,
   if(!all(c("name", "adduct", "mz") %in% colnames(ms1library))) {
     
     stop("The columns name, adduct and mz are required")
+    
+  }
+
+  if(!c("rtime") %in% colnames(ms1library)) {
+    
+    ms1library$rtime <- 0
     
   }
 
@@ -51,21 +59,28 @@ annotateMz <- function(x, ms1library,
   
   for(i in 1:nrow(row_anno)) {
     
+    # filter based on RT
+    ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - row_anno$RT[i]) < rtOffset + rtimeTolerance)]
+    
     # use MsCoreUtils closest() to get closests hits
-    matches <- closest(ms1library$mz, row_anno$`m/z`[i],
+    matches <- closest(ms1libraryfilter$mz, row_anno$`m/z`[i],
                        tolerance = tolerance, ppm = ppm,
                        duplicates = "keep") == 1
+    
     matches[is.na(matches)] <- FALSE
     
     if(any(matches)) {
       
       results <- rbind.data.frame(results,
                                   cbind.data.frame(row_anno[i,],
-                                                   ms1library[matches,]))
+                                                   ms1libraryfilter[matches,]))
       
     }
   }
   
+  # TODO add filtering on RT and CCS here
+  
+  # return result values
   results
 
 }
@@ -138,12 +153,16 @@ compareSpectraLibrary <- function(x,
   rtime <- x$rtime
   
   if("CLUSTER_ID" %in% spectraVariables(x)) {
+    
     cluster_id <- x$CLUSTER_ID
+    
   } else {
+    
     cluster_id <- paste0("M",
                          mz,
                          "T",
                          as.integer(rtime))
+    
   }
   
   

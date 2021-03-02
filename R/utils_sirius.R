@@ -82,6 +82,21 @@ writeSiriusFile <- function(ms1_spectra = Spectra(),
         
       }
       
+      # convert adducts to Sirius notatoin
+      if(adduct == "[M+NH4]+") {
+        
+        adduct <- "[M+NH3+H]+"
+        
+      } else if(adduct == "[M+FA-H]-") {
+        
+        adduct <- "[M+CH2O2-H]-"
+        
+      } else if(adduct == "[M+HAc-H]-") {
+        
+        adduct <- "[M+C2H4O2-H]-"
+        
+      }
+      
       .cat(paste0(">compound ", cluster, "\n"))
       .cat(paste0(">ionization ", adduct, "\n"))
       .cat(paste0(">parentmass ", min(ms1_spectrum$mz), "\n"))
@@ -114,6 +129,12 @@ writeSiriusFile <- function(ms1_spectra = Spectra(),
             
           }
         }
+      } else {
+        
+        .cat("\n\n>ms2\n")
+        .cat(min(ms1_spectrum$mz), " 100")
+        .cat("\n")
+        
       }
     }
     
