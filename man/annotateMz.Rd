@@ -9,6 +9,7 @@ annotateMz(
   ms1library,
   tolerance = 0,
   ppm = 0,
+  rtOffset = 0,
   rtimeTolerance = Inf,
   matchAdduct = FALSE,
   adducts = c("[M+H]+")
@@ -24,6 +25,10 @@ columns are name, adduct and mz}
 \item{tolerance}{\code{numeric} absolute tolerance for matching of peaks}
 
 \item{ppm}{\code{numeric} relative tolerance for matching of peaks}
+
+\item{rtOffset}{\code{numeric} Known offset between data and database}
+
+\item{rtimeTolerance}{\code{numeric} tolerance for matching with RT}
 
 \item{adducts}{\code{character} Vector with adducts to be used. Names of adducts
 between \code{ms1library} and \code{adducts} have to match!}

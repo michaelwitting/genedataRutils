@@ -1,6 +1,6 @@
 Package: genedataRutils
 Title: Collection of utility functions to work with .gda files in R
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: 
     c(person(given = "Michael", family = "Witting",
              role = c("aut", "cre"),
