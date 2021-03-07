@@ -10,6 +10,8 @@
 #'     columns are name, adduct and mz
 #' @param tolerance `numeric` absolute tolerance for matching of peaks
 #' @param ppm `numeric` relative tolerance for matching of peaks
+#' @param rtOffset `numeric` Known offset between data and database
+#' @param rtimeTolerance `numeric` tolerance for matching with RT
 #' @param matchAdducts `boolean` Indicates if MS1 library shall be first 
 #'     filtered based on the values in `adducts`
 #' @param adducts `character` Vector with adducts to be used. Names of adducts 
@@ -60,7 +62,7 @@ annotateMz <- function(x, ms1library,
   for(i in 1:nrow(row_anno)) {
     
     # filter based on RT
-    ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - row_anno$RT[i]) < rtOffset + rtimeTolerance)]
+    ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - row_anno$RT[i]) < rtOffset + rtimeTolerance),]
     
     # use MsCoreUtils closest() to get closests hits
     matches <- closest(ms1libraryfilter$mz, row_anno$`m/z`[i],
