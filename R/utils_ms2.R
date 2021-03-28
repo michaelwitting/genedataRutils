@@ -43,6 +43,56 @@ ms2AddId <- function(x, spectra) {
   
 }
 
+#' @title Add MS1 ID to MS2 spectra
+#'
+#' @description
+#'
+#' `ms2AddId2` allows to add MS1 IDs, e.g. "Cluster_0001" to the respective MS2 
+#'      data present in a <code>Spectra</code> object. This allows to link MS1 
+#'      and MS2 data.
+#'
+#' @param x `list` List with data read from .gda file containing grouped 
+#'     MS1 cluster
+#' @param spectra `Spectra` Spectra object containing MS2 spectra to be
+#'     matched with the MS1 data
+#'     
+#' @param tolerance `numeric` Absolute tolerance
+#' 
+#' @param ppm `numeric` relative tolerance
+#' 
+#' @param rtimeTolerance `numeric` Retention time tolerance
+#'
+#' @return `Spectra` with the additional column CLUSTER_ID.
+#'
+#' @author Michael Witting
+#' 
+#' @importFrom BiocGenerics lapply
+#'
+#' @export
+#'
+#' @examples
+#'
+#' 
+ms2AddId2 <- function(x, spectra, tolerance = 0, ppm = 0, rtimeTolerance = 0) {
+  
+  row_anno <- getRowAnno(x)
+  
+  # add cluster ID
+  spectra$CLUSTER_ID <- unlist(spectrapply(spectra, function(x, df) {
+    
+    id <- row.names(df[which(abs(df$RT - x$rtime / 60) < rtimeTolerance &
+                               abs(df$`m/z` - x$precursorMz) < tolerance + ppm(ppm, x$precursorMz)),])
+    
+    
+    id[1]
+    
+  }, df = row_anno))
+  
+  # return spectra
+  spectra
+  
+}
+
 #' @title Correction of retention time in Spectra objects
 #' 
 #' @description 
