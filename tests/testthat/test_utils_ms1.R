@@ -1,4 +1,4 @@
-test_that("Util functions for working with MS2", {
+test_that("Matching of mz values works", {
   
   # read MS1 data
   gda_cluster <- readGda(system.file("extdata/20191108_Pesticides_test_Cluster.gda",

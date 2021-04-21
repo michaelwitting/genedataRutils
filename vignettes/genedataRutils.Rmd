@@ -120,6 +120,13 @@ spectra <- ms2AddId(ms1_cluster, ms2_spectra)
 head(spectra$CLUSTER_ID)
 ```
 
+Sometimes the peak boundaries are rather large and therefore include MS2 spectra which are actually not correct. <code>ms2AddId2</code> offers an alternative by defining the maximum allowed distances in form of <code>tolerance</code> and <code>rtimeTolerance</code> from the reported m/z and retention time.
+
+```{r}
+spectra_2 <- ms2AddId2(ms1_cluster, ms2_spectra, tolerance = 0.005, ppm = 0, rtimeTolerance = 0.1)
+head(spectra_2$CLUSTER_ID)
+```
+
 This new variable can be used to subset the <code>Spectra</code> object.
 
 ```{r}

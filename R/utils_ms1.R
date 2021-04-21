@@ -82,33 +82,6 @@ reconstructIsoPattern <- function(peaks, cluster) {
     
     ms1_spectra <- c(ms1_spectra, Spectra(spd))
     
-    # for(sample in samples) {
-    #   
-    #   int <- as.vector(peaks_full_filter[,sample])
-    # 
-    #   int[is.na(int)] <- 0
-    #   
-    #   # create Spectra object
-    #   ms1_spectrum <- DataFrame(
-    #     msLevel = 1L,
-    #     mz = mz,
-    #     intensity = int,
-    #     sample = sample,
-    #     rtime = rtime,
-    #     CLUSTER_ID = paste0("Cluster_", sprintf(eval(paste0("%0", clusterLength, "d")), clusterId)),
-    #     ADDUCT = adduct
-    #   )
-    #   
-    #   ms1_spectrum$mz <- IRanges::NumericList(ms1_spectrum$mz)
-    #   ms1_spectrum$intensity <- IRanges::NumericList(ms1_spectrum$intensity)
-    #   
-    #   ms1_spectrum <- Spectra(ms1_spectrum)
-    #   
-    #   ms1_spectra <- c(ms1_spectra, ms1_spectrum)
-    #   
-    #   
-    # }
-    
   }
   
   return(ms1_spectra)
