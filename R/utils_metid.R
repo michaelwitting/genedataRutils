@@ -116,7 +116,8 @@ compareSpectraLibrary <- function(x,
                                   ppm = 0,
                                   rtOffset = 0, 
                                   rtimeTolerance = Inf,
-                                  plot = FALSE) {
+                                  plot = FALSE,
+                                  BPPARAM = SerialParam()) {
   
   # sanity checks
   if(!all(c("accession", "name", "exactmass", "adduct", "precursorMz") %in%
@@ -133,7 +134,8 @@ compareSpectraLibrary <- function(x,
                               ppm = ppm,
                               rtOffset = rtOffset,
                               rtimeTolerance = rtimeTolerance,
-                              plot = plot)
+                              plot = plot,
+                              BPPARAM = BPPARAM)
 
   do.call(rbind, results_list)
 
