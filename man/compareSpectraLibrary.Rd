@@ -11,7 +11,8 @@ compareSpectraLibrary(
   ppm = 0,
   rtOffset = 0,
   rtimeTolerance = Inf,
-  plot = FALSE
+  plot = FALSE,
+  BPPARAM = SerialParam()
 )
 }
 \arguments{
