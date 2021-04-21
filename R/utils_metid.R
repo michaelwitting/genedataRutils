@@ -183,7 +183,8 @@ compareSpectraLibrary <- function(x,
                               ppm = ppm,
                               rtOffset = rtOffset,
                               rtimeTolerance = rtimeTolerance,
-                              plot = plot)
+                              plot = plot,
+                              BPPARAM = bpparam())
 
   do.call(rbind, results_list)
 

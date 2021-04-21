@@ -36,7 +36,8 @@ ms2AddId <- function(x, spectra) {
 
     id[1]
     
-  }, df = row_anno))
+  }, df = row_anno,
+  BPPARAM = bpparam()))
   
   # return spectra
   spectra

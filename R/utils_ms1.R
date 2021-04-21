@@ -77,7 +77,7 @@ reconstructIsoPattern <- function(peaks, cluster) {
       ADDUCT = rep(adduct, length(samples))
     )
     
-    spd$mz <- lapply(vector(mode = "list", length = length(samples)), function(x) mz)
+    spd$mz <- bplapply(vector(mode = "list", length = length(samples)), function(x) mz)
     spd$intensity <- unname(as.list(peaks_full_filter[,2:(1+length(samples))]))
     
     ms1_spectra <- c(ms1_spectra, Spectra(spd))
