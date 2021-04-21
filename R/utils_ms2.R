@@ -87,7 +87,8 @@ ms2AddId2 <- function(x, spectra, tolerance = 0, ppm = 0, rtimeTolerance = 0) {
     
     id[1]
     
-  }, df = row_anno))
+  }, df = row_anno,
+  BPPARAM = bpparam()))
   
   # return spectra
   spectra
