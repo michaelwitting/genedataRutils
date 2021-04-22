@@ -184,6 +184,7 @@ compareSpectraLibrary <- function(x,
                               rtOffset = rtOffset,
                               rtimeTolerance = rtimeTolerance,
                               plot = plot,
+                              f = x$CLUSTER_ID,
                               BPPARAM = bpparam())
 
   do.call(rbind, results_list)
