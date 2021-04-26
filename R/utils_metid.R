@@ -23,7 +23,8 @@
 #' 
 #' @examples 
 #' 
-annotateMz <- function(x, ms1library,
+annotateMz <- function(x,
+                       ms1library,
                        tolerance = 0,
                        ppm = 0,
                        rtOffset = 0,
@@ -59,83 +60,31 @@ annotateMz <- function(x, ms1library,
   
   results <- data.frame()
   
-  # for(i in 1:nrow(row_anno)) {
-  #   
-  #   # filter based on RT
-  #   ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - row_anno$RT[i]) < rtOffset + rtimeTolerance),]
-  #   
-  #   # use MsCoreUtils closest() to get closests hits
-  #   matches <- closest(ms1libraryfilter$mz, row_anno$`m/z`[i],
-  #                      tolerance = tolerance, ppm = ppm,
-  #                      duplicates = "keep") == 1
-  #   
-  #   matches[is.na(matches)] <- FALSE
-  #   
-  #   if(any(matches)) {
-  #     
-  #     results <- rbind.data.frame(results,
-  #                                 cbind.data.frame(row_anno[i,],
-  #                                                  ms1libraryfilter[matches,]))
-  #     
-  #   }
-  # }
-  
-  result_list <- bplapply(row_anno$`m/z`,
-                        .annotateMzHelper,
-                        ms1library = ms1library,
-                        tolerance = tolerance,
-                        ppm = ppm,
-                        rtOffset = rtOffset,
-                        rtimeTolerance = rtimeTolerance)
-  
-  anno <- do.call(rbind, result_list[!is.na(result)])
-  feature <- row_anno[!is.na(result_list),]
-  
-  result_df <- cbind.data.frame(feature, anno)
-  
-  # TODO add filtering on RT and CCS here
-  
-  # return result values
-  #results
-  
-  result_df
+  for(i in 1:nrow(row_anno)) {
 
-}
+    # filter based on RT
+    ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - row_anno$RT[i]) < rtOffset + rtimeTolerance),]
 
-#'
-#'
-#' helper function
-.annotateMzHelper <- function(mz,
-                              #rtime,
-                              ms1library,
-                              tolerance,
-                              ppm,
-                              rtOffset,
-                              rtimeTolerance) {
-  
-  # filter based on RT
-  #ms1libraryfilter <- ms1library[which(abs(ms1library$rtime - rt) < rtOffset + rtimeTolerance),]
-  
-  # use MsCoreUtils closest() to get closests hits
-  matches <- closest(ms1library$mz,
-                     mz,
-                     tolerance = tolerance,
-                     ppm = ppm,
-                     duplicates = "keep") == 1
-  
-  matches[is.na(matches)] <- FALSE
-  
-  if(any(matches)) {
-    
-    return(ms1library[matches,])
-    
-  } else {
-    
-    return(NA)
-    
+    # use MsCoreUtils closest() to get closests hits
+    matches <- closest(ms1libraryfilter$mz, row_anno$`m/z`[i],
+                       tolerance = tolerance, ppm = ppm,
+                       duplicates = "keep") == 1
+
+    matches[is.na(matches)] <- FALSE
+
+    if(any(matches)) {
+
+      results <- rbind.data.frame(results,
+                                  cbind.data.frame(row_anno[i,],
+                                                   ms1libraryfilter[matches,]))
+
+    }
   }
-  
+
+  results
+
 }
+
 
 
 #' @title  Compare against a MS2 library
@@ -155,6 +104,8 @@ annotateMz <- function(x, ms1library,
 #' @param rtimeTolerance `numeric` tolerance for retention time search
 #' 
 #' @return `data.frame` with the results
+#' 
+#' @import MsCoreUtils
 #'
 #' @export
 #' 
