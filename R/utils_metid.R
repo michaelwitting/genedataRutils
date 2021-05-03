@@ -177,7 +177,7 @@ compareSpectraLibrary <- function(x,
   
   # costum matching function
   specNrow <-  function(x, y, ...) nrow(x)
-  mydotproduct <- function(x, y, type = NA, ...) MsCoreUtils::ndotproduct(x, y, ...)
+  #mydotproduct <- function(x, y, type = NA, ...) MsCoreUtils::ndotproduct(x, y, ...)
   
   if(length(ms2library)) {
     
@@ -187,14 +187,16 @@ compareSpectraLibrary <- function(x,
     
     res_forward <- compareSpectra(x,
                                   ms2library,
-                                  FUN = mydotproduct,
+                                  #FUN = mydotproduct,
+                                  FUN = ndotproduct,
                                   tolerance = tolerance,
                                   ppm = ppm,
                                   type = "outer")
     
     res_backward <- compareSpectra(x,
                                    ms2library,
-                                   FUN = mydotproduct,
+                                   #FUN = mydotproduct,
+                                   FUN = ndotproduct,
                                    tolerance = tolerance,
                                    ppm = ppm,
                                    type = "right")
